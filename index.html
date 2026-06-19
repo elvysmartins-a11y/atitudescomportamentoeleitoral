@@ -1,0 +1,4224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PREMUGS Avalia — Painel Gerencial</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>	
+<style>
+  :root {
+    --sms-blue: #004B87;
+    --sms-blue-light: #006BB4;
+    --sms-teal: #00876A;
+    --sms-teal-light: #E1F5EE;
+    --accent: #0087A8;
+    --bg: #F4F7FB;
+    --bg-card: #FFFFFF;
+    --text: #1A2332;
+    --text-muted: #5C6B82;
+    --border: #DDE3ED;
+    --score-4: #00876A;
+    --score-3: #4DB89A;
+    --score-2: #F0A500;
+    --score-1: #D8482F;
+    --dim-ped: #3B5FCC;
+    --dim-rel: #00876A;
+    --dim-org: #9B59B6;
+    --dim-gov: #D8482F;
+    --dim-sus: #F0A500;
+    --dim-avg: #0087A8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+/* ==========================
+   HEADER PREMUGS
+========================== */
+
+.header-premugs{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:12px 28px;
+
+	background:
+	radial-gradient(circle at top right,
+		rgba(255,255,255,.20),
+		transparent 50%),
+	linear-gradient(
+		135deg,
+		#4E8FD8 0%,
+		#6FADE7 100%
+	);
+	color:white;
+    min-height:110px;
+}
+
+.header-left{
+    flex:0 0 220px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.premugs-logo{
+    width:220px;
+    height:auto;
+}
+	
+.sms-logo{
+    width:120px;
+    height:auto;
+	margin-bottom:8px;
+}
+
+.header-divider{
+    width:2px;
+    height:70px;
+    background:rgba(255,255,255,.6);
+}
+
+.header-center{
+    flex:1;
+    padding:0 20px;
+
+    border-left:2px solid rgba(255,255,255,.45);
+
+    margin-left:8px;
+}
+
+.header-center h1{
+    font-size:2rem;
+    font-weight:700;
+    margin-bottom:8px;
+}
+
+.header-center p{
+    font-size:1rem;
+    margin-bottom:6px;
+    opacity:.95;
+}
+
+.header-center .subtitulo{
+    font-size:0.8rem;
+    font-weight:100;
+    opacity:.95;
+}	
+
+/* DATA */
+.header-right{
+    width:180px;
+
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    justify-content:center;
+
+    text-align:right;
+}
+
+.update-box{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:1px;
+}
+
+.update-box svg{
+    width:40px;
+    height:40px;
+}
+
+.update-box span{
+    font-size:.8rem;
+    opacity:.90;
+}
+
+.update-box strong{
+    font-size:.8rem;
+    font-weight:200;
+}
+
+  /* ── FILTERS ── */
+  .filters-bar {
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 28px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .filters-bar label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+  .filters-bar select {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--bg);
+    cursor: pointer;
+    min-width: 140px;
+  }
+  .btn-refresh {
+    margin-left: auto;
+    background: var(--sms-blue);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: background .2s;
+  }
+  .btn-refresh:hover { background: var(--sms-blue-light); }
+  .btn-refresh svg { width: 14px; height: 14px; }
+
+	.btn-export{
+	    background:#00876A;
+	    color:#fff;
+	    border:none;
+	    border-radius:6px;
+	    padding:6px 16px;
+	    font-size:12px;
+	    font-weight:500;
+	    cursor:pointer;
+	}
+	
+	.btn-export:hover{
+	    opacity:.9;
+	}
+
+	.btn-formulario{
+	    background:#D97706;
+	    color:white;
+	    border:none;
+	    border-radius:6px;
+	    padding:6px 16px;
+	    font-size:12px;
+	    font-weight:500;
+	    cursor:pointer;
+	    transition:.2s;
+	}
+	
+	.btn-formulario:hover{
+		background:#B45309;
+	}	
+
+	.tab-btn{
+	    /*background: var(--sms-blue);*/
+		background:#00876A;
+	    color:#fff;
+	    border:none;
+	    border-radius:6px;
+	    padding:6px 16px;
+	    font-size:12px;
+	    font-weight:500;
+	    cursor:pointer;
+	}
+	
+	.tab-btn:hover{
+	     opacity:.9;
+	}
+	
+  /* ── MAIN LAYOUT ── */
+  main { padding: 20px 28px 40px; max-width: 1400px; margin: 0 auto; }
+
+  /* ── KPI STRIP ── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .kpi-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    position: relative;
+    overflow: hidden;
+	text-align:center;
+  }
+  .kpi-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--accent-color, var(--sms-teal));
+    border-radius: 10px 10px 0 0;
+  }
+  .kpi-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; text-align:center;}
+  //.kpi-value { font-size: 28px; font-weight: 700; color: var(--text); line-height: 1; }
+  //.kpi-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+  .kpi-value { font-size: 16px; font-weight: 500; color: var(--text); line-height: 1.2; text-align:center; margin-top:8px; margin-bottom:8px;}
+  .kpi-sub { font-size: 12px; color: var(--text-muted); margin-top: 6px; text-align:center;}
+  .kpi-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 10px;
+	border-radius:14px;
+	text-align:center;
+  }
+ .kpi-progress{
+	 width:100%;
+     height:6px;
+     background:#E5E7EB;
+     border-radius:999px;
+     overflow:hidden;
+     margin:10px 0;
+ }
+ .kpi-progress-fill{
+     height:100%;
+     border-radius:999px;
+     transition:width .4s ease;
+ }	
+
+	
+  /* ── CHART SECTION ── */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  @media (max-width: 900px) { .charts-grid { grid-template-columns: 1fr; } }
+  .chart-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    overflow:hidden;	  
+  }
+  .chart-card.full { grid-column: 1 / -1; }
+  .chart-title {
+    font-size: 13px; font-weight: 600; color: var(--text);
+    margin-bottom: 4px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .chart-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 14px; }
+  .chart-canvas-wrap { position: relative; width: 100%; overflow:hidden;}
+
+  /* ── SCORE BAR ── */
+  .dim-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .dim-label { font-size: 12px; font-weight: 500; width: 130px; flex-shrink: 0; color: var(--text); }
+  .dim-bar-bg {
+    flex: 1; height: 14px; background: var(--bg);
+    border-radius: 7px; overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .dim-bar-fill { height: 100%; border-radius: 7px; transition: width .8s cubic-bezier(.4,0,.2,1); }
+  .dim-score { font-size: 12px; font-weight: 700; width: 32px; text-align: right; }
+
+#perfilDimChartInst{
+    max-height:420px;
+}
+	
+  /* ── LIKERT GRID ── */
+  .likert-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 900px) { .likert-grid { grid-template-columns: 1fr; } }
+
+  /* ── TABLE ── */
+  .responses-table-wrap {
+    overflow-x: auto;
+    margin-top: 6px;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th {
+    background: var(--bg);
+    padding: 8px 10px;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: var(--text-muted);
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  td { padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+  tr:last-child td { border-bottom: auto; }
+  tr:hover td { background: var(--bg); }
+
+  /* ── SCORE BADGES ── */
+  .score-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .sp-4 { background: #E1F5EE; color: #00876A; }
+  .sp-3 { background: #E3F6EF; color: #2E9E7A; }
+  .sp-2 { background: #FFF3DC; color: #B37A00; }
+  .sp-1 { background: #FDEEEA; color: #C0392B; }
+
+  /* ── STATE SCREENS ── */
+  #loading-state, #error-state {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 300px; color: var(--text-muted); gap: 12px;
+  }
+  .spinner {
+    width: 36px; height: 36px; border: 3px solid var(--border);
+    border-top-color: var(--sms-blue);
+    border-radius: 50%; animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── SECTION TITLE ── */
+  .section-title {
+    font-size: 13px; font-weight: 600; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: .6px;
+    margin: 22px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 11px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    margin-top: 20px;
+  }
+  footer a { color: var(--sms-blue-light); text-decoration: none; }
+  
+
+/* ==========================
+   MODAL DIMENSÕES
+========================== */
+
+.dim-row{
+    cursor:pointer;
+    transition:.2s;
+}
+
+.dim-row:hover{
+    background:#f5f8fc;
+    border-radius:8px;
+    padding:4px;
+}
+
+.modal{
+    display:none;
+    position:fixed;
+    z-index:9999;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.55);
+}
+
+.modal-content{
+    background:#fff;
+    width:90%;
+    max-width:900px;
+    margin:50px auto;
+    border-radius:12px;
+    padding:25px;
+    max-height:80vh;
+    overflow-y:auto;
+    box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+
+.modal-content table {
+    margin-bottom: 12px;
+}
+
+.modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+    border-bottom:1px solid #ddd;
+    padding-bottom:10px;
+}
+
+.modal-header h2{
+    margin:0;
+    color:var(--sms-blue);
+}
+
+.close-modal{
+    font-size:28px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.indicador-item{
+    padding:10px;
+    margin-bottom:8px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    background:#fafafa;
+}
+
+.indicador-item strong{
+    display:block;
+    margin-bottom:5px;
+    color:#004B87;
+}  
+
+/* MODAL */
+
+.modal{
+    display:none;
+    position:fixed;
+    z-index:9999;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.55);
+}
+
+.modal-content{
+    background:#fff;
+    width:90%;
+    max-width:900px;
+    margin:50px auto;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 10px 30px rgba(0,0,0,.25);
+    max-height:80vh;
+    overflow:auto;
+}
+
+.close-modal{
+    float:right;
+    font-size:32px;
+    cursor:pointer;
+    color:#666;
+}
+
+.close-modal:hover{
+    color:#000;
+}
+
+.modal-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+	margin-bottom: 12px;
+}
+
+.modal-table th,
+.modal-table td{
+    border:1px solid #ddd;
+    padding:10px;
+    text-align:left;
+}
+
+.modal-table th{
+    background:#f4f7fb;
+}
+
+.dim-row{
+    cursor:pointer;
+    transition:.2s;
+}
+
+.dim-row:hover{
+    transform:translateX(3px);
+}  
+
+.accordion-item{
+    border:1px solid #ddd;
+    border-radius:8px;
+    margin-bottom:10px;
+    overflow:hidden;
+}
+
+.accordion-header{
+    padding:14px;
+    background:#f4f7fb;
+    cursor:pointer;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-weight:600;
+}
+
+.accordion-header:hover{
+    background:#eaf0f8;
+}
+
+.accordion-body{
+    display:none;
+    padding:16px;
+    background:#fff;
+}
+
+.accordion-body.open{
+    display:block;
+}
+
+.accordion-body ul{
+    margin-top:10px;
+    padding-left:20px;
+}
+
+.accordion-body li{
+    margin-bottom:10px;
+}
+
+.likert-mini{
+    display:flex;
+    height:40px;
+    margin-top:20px;
+    border-radius:8px;
+    overflow:hidden;
+    background:#f0f0f0;
+}
+
+.l4{
+    background:#00876A;
+}
+
+.l3{
+    background:#4DB89A;
+}
+
+.l2{
+    background:#F0A500;
+}
+
+.l1{
+    background:#D8482F;
+}
+
+.likert-mini > div{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    color:white;
+    font-size:12px;
+    font-weight:600;
+
+    min-width:40px;      /* evita blocos invisíveis */
+    white-space:nowrap;
+}
+
+.resumo-likert{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+    font-size:13px;
+}
+
+.resumo-likert th{
+    background:#f4f7fb;
+    padding:8px;
+    text-align:left;
+    border:1px solid #ddd;
+}
+
+.resumo-likert td:last-child{
+    text-align:center;
+    font-weight:600;
+}
+
+.resumo-likert td:first-child{
+    font-weight:600;
+}
+
+.resumo-likert tr:nth-child(even){
+    background:#fafafa;
+}	
+
+.nivel-dot{
+    display:inline-block;
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    margin-right:8px;
+    vertical-align:middle;
+}
+
+.nivel-4{
+    background:#00876A;
+}
+
+.nivel-3{
+    background:#4DB89A;
+}
+
+.nivel-2{
+    background:#F0A500;
+}
+
+.nivel-1{
+    background:#D8482F;
+}	
+
+.tab-content{
+    animation: fadeTab .25s ease;
+}
+
+@keyframes fadeTab{
+    from{
+        opacity:0;
+        transform:translateY(5px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}	
+
+.avaliacao-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:16px;
+}
+
+.avaliacao-grid .chart-card{
+    height:280px;
+}
+
+.donut-center{
+    width:100%;
+    height:180px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+}
+
+#utilidadeScore{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+	text-align:center;
+    flex:1;
+	min-height:220px;
+}
+
+#utilidadeScore > div{
+    transform:none;
+}
+
+#utilidadeScore .score-number{
+    font-size:72px;
+    font-weight:700;
+    color:#00876A;
+    line-height:1;
+}
+
+#utilidadeScore .score-label{
+    margin-top:8px;
+    font-size:20px;
+    color:#8a94a6;
+}	
+
+.chart-metric{
+    font-size:14px;
+    color:#8a94a6;
+    margin-top:-6px;
+    margin-bottom:10px;
+}
+
+.chart-metric strong{
+    color:#2563eb;
+    font-weight:700;
+}	
+
+.dimensao-accordion{
+    margin-bottom:20px;
+}
+
+.dimensao-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    cursor:pointer;
+    padding:14px 18px;
+    border-radius:8px;
+    background:#004B87;
+    color:#fff;
+    font-weight:700;
+    font-size:14px;
+}
+
+.dimensao-info{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}	
+
+.dimensao-media{
+    font-size:14px;
+    font-weight:700;
+    color:#DCEEFF;
+}	
+
+.dimensao-header small{
+    display:block;
+    margin-top:3px;
+    font-size:12px;
+    color:#CBD5E1;
+}	
+
+.dimensao-header:hover{
+    background:#00599f;
+}
+
+.dimensao-body{
+    display:none;
+    margin-top:10px;
+}
+
+.qualitativa-card{
+
+    margin-bottom:24px;
+
+    border:1px solid #e2e8f0;
+
+    border-radius:12px;
+
+    padding:20px;
+
+    background:white;
+}
+
+.qualitativa-title{
+
+    font-size:16px;
+    font-weight:200;
+    margin-bottom:4px;
+}
+
+.qualitativa-count{
+
+    color:#64748b;
+
+    margin-bottom:20px;
+}
+
+.qualitativa-resposta{
+
+    padding:16px;
+
+    margin-bottom:12px;
+
+    background:#f8fafc;
+
+    border-radius:10px;
+
+    line-height:1.6;
+}
+
+.perfil-qualitativo{
+
+    margin-top:12px;
+
+    border:1px solid #e5e7eb;
+
+    border-radius:8px;
+
+    overflow:hidden;
+}
+
+.perfil-header{
+
+    background:#f4f7fb;
+
+    padding:12px 16px;
+
+    cursor:pointer;
+
+    display:flex;
+    justify-content:space-between;
+
+    font-weight:600;
+}
+
+.perfil-header:hover{
+
+    background:#e8eef7;
+}
+
+.perfil-body{
+
+    display:none;
+
+    padding:15px;
+}
+
+.qualitativa-resposta{
+
+    padding:12px;
+
+    margin-bottom:10px;
+
+    background:#fafafa;
+
+    border-left:4px solid #004B87;
+
+    border-radius:6px;
+}	
+
+.accordion-header{
+    cursor:pointer;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.accordion-body{
+    margin-top:12px;
+}	
+
+.dimensao-card{
+    margin-bottom: 28px;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.dimensao-header{
+    border-radius: 16px;
+}
+
+#gaugePremugs{
+
+    max-width:420px;
+
+    max-height:220px;
+
+    margin:auto;
+
+}
+	
+.card-gauge{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:25px;
+    border-radius:14px;
+    background:white;
+    margin-bottom:25px;
+}
+
+.gauge-info{
+    flex:1;
+}
+	
+.gauge-wrapper{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+	
+.gauge-legenda{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:28px;
+    margin-top:16px;
+    flex-wrap:nowrap;	
+}
+
+.leg-item{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    white-space:nowrap;
+}
+
+.leg-item span:last-child{
+    white-space:nowrap;
+    font-size:14px;
+    color:#475569;
+}	
+
+.lg-red,
+.lg-yellow,
+.lg-green{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    flex-shrink:0;
+}	
+	
+.lg-red{
+    background:#e52420;
+}
+
+.lg-yellow{
+    background:#d67a00;
+}
+
+.lg-green{
+    background:#0b8457;
+}
+
+.gauge-svg{
+    width:280px;
+    height:180px;
+}	
+
+.premugs-legenda{
+    display:flex;
+    justify-content:center;
+    gap:30px;
+    margin-top:12px;
+    font-size:12px;
+    color:#64748B;
+}
+
+.dot{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    display:inline-block;
+    margin-right:6px;
+}
+
+.vermelho{
+    background:#e52420;
+}
+
+.amarelo{
+    background:#d67a00;
+}
+
+.verde{
+    background:#0b8457;
+}	
+
+#premugsGauge{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}	
+	
+</style>
+</head>
+<body>
+
+<header class="header-premugs">
+
+    <div class="header-left">
+        <img src="logopremugsavalia.png"
+             class="premugs-logo"
+        	 alt="PREMUGS Avalia">
+    </div>
+
+    <div class="header-divider"></div>
+
+    <div class="header-center">
+        <h1>Painel Gerencial</h1>
+		<p>Avaliação do Programa de Residência Multiprofissional em Gestão em Saúde</p>
+        <p>PREMUGS Avalia</p>
+    </div>
+
+    <div class="header-right">
+        <div class="update-box">
+
+        <img src="logo-sms.png"
+             class="sms-logo"
+             alt="Prefeitura de Florianópolis">
+			<!-- ícone -->
+
+            <div>
+                <span>Atualizado:</span>
+                <strong id="last-updated">
+                    Carregando...
+                </strong>
+            </div>
+
+        </div>
+    </div>
+
+</header>
+
+<div class="filters-bar">
+  <label for="filter-perfil">Perfil:</label>
+  <select id="filter-perfil">
+    <option value="todos">Todos os perfis</option>
+    <option value="Residentes">Residente</option>
+    <option value="Preceptores">Preceptor(a)</option>
+    <option value="Tutores">Tutor(a)</option>
+    <option value="Coordenadores">Coordenador(a)</option>
+  </select>
+
+  <label for="filter-ciclo">Ciclo:</label>
+  <select id="filter-ciclo">
+    <option value="todos">Todos os ciclos</option>
+  </select>
+
+  <button class="btn-refresh" onclick="loadData()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115.5-4.5M20 15a9 9 0 01-15.5 4.5"/>
+    </svg>
+    Atualizar dados
+  </button>
+	<button
+		class="btn-export"
+		onclick="exportExcel()">
+			📊 Exportar Excel
+	</button>
+	<button class="btn-formulario"
+        onclick="window.open(
+            'https://forms.gle/kQBsE9uEhYcUHBUe7',
+            '_blank'
+        )">
+	    📝 PREMUGS Avalia
+	</button>	
+</div>
+
+<main>
+  <div id="loading-state">
+    <div class="spinner"></div>
+    <p>Carregando dados do Google Forms...</p>
+  </div>
+  <div id="error-state" style="display:none">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <p id="error-msg">Erro ao carregar dados.</p>
+    <small>Verifique se a planilha está pública e a URL está correta em config.js</small>
+  </div>
+  <div id="dashboard" style="display:none">
+
+    <!-- KPIs -->
+    <div class="kpi-grid" id="kpi-grid"></div>
+
+	  <!-- ABAS -->
+	  <div class="tabs">
+	      <button class="tab-btn active"
+              	  onclick="showTab('geral', this)">
+	          📊 Análise Geral
+	      </button>
+		  
+	      <button class="tab-btn"
+	              onclick="showTab('perfil', this)">
+	          👥 Análise por Perfil
+	      </button>
+	
+	      <button class="tab-btn"
+	              onclick="showTab('distribuicao', this)">
+	          📈 Análise Quantitativa
+	      </button>
+
+		  <button class="tab-btn"
+		          onclick="showTab('qualitativas', this)">
+		      💬 Análise Qualitativa
+     	  </button>
+
+		  <button class="tab-btn"
+	              onclick="showTab('respostas', this)">
+	          📝 Registros de Respostas
+	      </button>
+	  </div>
+	  
+	  
+	<div id="tab-geral" class="tab-content">	  
+		<p class="section-title">Avaliação Geral</p>
+
+	    <div class="charts-grid">
+			<div class="chart-card">
+				<div class="chart-title">Índice Geral PREMUGS</div>
+				<p id="gaugeSubtitulo"></p>
+				<div id="premugsGauge"></div>
+				<div class="gauge-legenda">
+				    <div class="leg-item">
+				        <span class="lg-red"></span>
+				        <span>&lt; 2 crítico</span>
+				    </div>
+				    <div class="leg-item">
+				        <span class="lg-yellow"></span>
+				        <span>2–3 atenção</span>
+				    </div>
+				    <div class="leg-item">
+				        <span class="lg-green"></span>
+				        <span>&gt; 3 bom</span>
+				    </div>
+				</div>
+			</div>
+			<div class="chart-card">
+				<div class="chart-title">Utilidade da Ferramenta PREMUGS Avalia</div>
+				<div id="utilidadeResumo" class="chart-metric"></div>
+				<div id="utilidadeScore"></div>
+			</div>
+	    </div>
+		
+		<div class="chart-card full">
+		    <div class="chart-title">Avaliação do PREMUGS</div>
+		    <div class="chart-sub">Percepção global do programa</div>
+		    <div class="avaliacao-grid">
+		        <div class="chart-card">
+		            <div class="chart-title">Como avalia o PREMUGS?</div>
+					<div id="premugsResumo" class="chart-metric"></div>
+		            <canvas id="premugsChart"></canvas>
+		        </div>
+		        <div class="chart-card">
+		            <div class="chart-title">Recomendaria o PREMUGS?</div>
+					<div id="recomendacaoResumo" class="chart-metric"></div>
+				     <div class="donut-center">
+				        <canvas id="recomendacaoChart"></canvas>
+				    </div>
+		        </div>
+		    </div>
+		</div>		
+		
+		<p class="section-title">Média por Dimensão</p>
+
+		<!-- Dimension bars + radar side by side -->
+	    <div class="charts-grid">
+	      <div class="chart-card">
+	        <div class="chart-title">Desempenho por Dimensão</div>
+	        <div class="chart-sub">Escala Likert 1–4 · média das respostas</div>
+	        <div id="dim-bars"></div>
+	      </div>
+	      <div class="chart-card">
+	        <div class="chart-title">Radar Multidimensional</div>
+	        <div class="chart-sub">Visão comparativa das seis dimensões</div>
+	        <div class="chart-canvas-wrap" style="height:280px">
+	          <canvas id="radarChart" role="img" aria-label="Radar chart das dimensões de avaliação PREMUGS">Radar das dimensões avaliativas.</canvas>
+	        </div>
+	      </div>
+	    </div>
+	  
+		<p class="section-title">Comparação entre Ciclos</p>
+	    <div class="charts-grid">
+			<div class="chart-card">
+				<div class="chart-title">Média Geral por Ciclo</div>
+				<div class="chart-sub">Comparativo dos ciclos identificados na planilha</div>
+				<div class="chart-canvas-wrap" style="height:280px">
+					<canvas id="cicloChart"></canvas>
+				</div>
+			</div>
+	
+			<div class="chart-card">
+			    <div class="chart-title">Média por dimensão e perfil</div>
+			    <div class="chart-sub">Como cada perfil avalia cada dimensão do programa</div>
+			    <div class="chart-canvas-wrap" style="height:280px">
+			        <canvas id="perfilDimChart"></canvas>
+			    </div>
+			</div>		
+	    </div>
+
+	</div>
+
+	<div id="tab-distribuicao" class="tab-content" style="display:none">	  
+	    <p class="section-title">Distribuição das Respostas</p>
+	
+	    <!-- Per-question Likert breakdown -->
+		<div class="chart-card full" id="likert-section">
+		  <div class="chart-title">Indicadores Avaliados</div>
+		
+		  <div class="chart-sub">
+		    Clique em um indicador para visualizar perguntas e distribuição das respostas
+		  </div>
+		
+		  <div id="indicadoresAccordion"></div>
+			<div class="premugs-legenda">
+				<span>
+					<i class="dot vermelho"></i>&lt; 2 crítico
+				</span>
+				<span>
+					<i class="dot amarelo"></i>2–3 atenção
+				</span>
+				<span>
+					<i class="dot verde"></i>&gt; 3 bom
+				</span>
+			</div>
+			
+		</div>
+	</div>
+
+	<div id="tab-qualitativas" class="tab-content" style="display:none">
+	    <p class="section-title">💬 Respostas Qualitativas</p>
+	    <div class="chart-card full">
+	        <div class="chart-title">Comentários dos participantes</div>
+	        <div class="chart-sub">Respostas em texto livre agrupadas por pergunta</div>
+	        <div id="qualitativasContainer"></div>
+	    </div>
+	</div>
+	  
+	<div id="tab-perfil" class="tab-content" style="display:none">	  
+	    <p class="section-title">Respostas por Perfil</p>
+	    <div class="charts-grid">
+	      <div class="chart-card">
+	        <div class="chart-title">Participação por Perfil</div>
+	        <div class="chart-sub">Distribuição dos respondentes</div>
+	        <div class="chart-canvas-wrap" style="height:240px">
+	          <canvas id="perfilChart" role="img" aria-label="Gráfico de rosca por perfil de respondente">Distribuição por perfil.</canvas>
+	        </div>
+	      </div>
+	      <div class="chart-card">
+	        <div class="chart-title">Média Geral por Perfil</div>
+	        <div class="chart-sub">Comparativo entre grupos</div>
+	        <div class="chart-canvas-wrap" style="height:240px">
+	          <canvas id="perfilBarChart" role="img" aria-label="Barras comparativas de média por perfil">Médias por perfil.</canvas>
+	        </div>
+	      </div>
+	    </div>
+	</div>
+
+	<div id="tab-respostas" class="tab-content" style="display:none"> 
+	    <p class="section-title">Últimas Respostas</p>
+	    <div class="chart-card">
+	      <div class="chart-title">Registros de Respostas <span style="font-weight:400;font-size:12px;color:var(--text-muted)" id="resp-count"></span></div>
+	      <div class="chart-sub">Exibindo as 50 mais recentes</div>
+	      <div class="responses-table-wrap">
+	        <table id="resp-table">
+	          <thead><tr id="table-header"></tr></thead>
+	          <tbody id="table-body"></tbody>
+	        </table>
+	      </div>
+	    </div>
+	</div>
+
+  </div><!-- /dashboard -->
+</main>
+
+<footer>
+  PREMUGS Avalia · Escola de Saúde Pública · SMS Florianópolis &nbsp;|&nbsp;
+  Desenvolvido pela Equipe de Consultoria do 8º termo 2026/1 <a href="#">Udesc/Esag</a> · Junho 2026
+</footer>
+
+<script src="config.js"></script>
+<script>
+const SHEET_ID = window.SHEET_CONFIG ? window.SHEET_CONFIG.sheetId : '1teLW5gF4PnfTb0dTIIhjibGHBcC11_yJieaoXdnzPTk';
+const GID      = window.SHEET_CONFIG ? window.SHEET_CONFIG.gid : '1949102773';
+
+/* ── Dimension config ── */
+const DIMS = {
+  pedagogica:     { label: 'Pedagógica',    color: '#3B5FCC' },
+  relacional:     { label: 'Relacional',    color: '#00876A' },
+  organizacional: { label: 'Organizacional',color: '#9B59B6' },
+  governanca:     { label: 'Governança',    color: '#D8482F' },
+  sustentabilidade:{ label: 'Sustentabilidade', color: '#F0A500' },
+  avaliacao_geral:{ label: 'Avaliação Geral', color: '#0087A8' },
+};
+
+/* ── Column → dimension mapping ── */
+/* Ajuste os índices (0-based) conforme a planilha real após primeira carga */
+const COL_PERFIL = '__auto__';   /* buscado automaticamente */
+const COL_CICLO  = '__auto__';
+
+/* ==========================
+   MAPEAMENTO OFICIAL
+========================== */
+
+const INDICADORES = {
+
+    pedagogica: [
+        {
+            codigo: "Índice de Evolução de Aprendizado",
+		    perguntas: [
+		        "Os conhecimentos adquiridos nas atividades teóricas aumentaram minha capacidade de atuar e resolver situações encontradas na prática do serviço?",
+		        "Os residentes conseguem aplicar, na prática, os conhecimentos desenvolvidos nas atividades teóricas do programa?",
+		        "As atividades pedagógicas favorecem a articulação entre teoria e prática na formação dos residentes?",
+		        "O programa promove integração adequada entre conteúdos teóricos e práticas desenvolvidas nos serviços de saúde?"
+		    ]			
+        },
+        {
+            codigo: "Índice de Desenvolvimento de Competências em Gestão",
+            perguntas: [
+				"O programa contribui para o desenvolvimento de competências em gestão em saúde?",
+		        "Os residentes demonstram evolução em competências relacionadas à gestão em saúde?",
+				"As atividades pedagógicas desenvolvidas favorecem competências de gestão em saúde?",
+		        "O programa desenvolve competências compatíveis com as demandas de gestão no SUS?"
+			]
+        },
+        {
+            codigo: "Índice de Qualidade Pedagógica",
+            perguntas: [
+				"As atividades formativas são planejadas e conduzidas de forma clara, organizada e adequada para promover a aprendizagem?",
+		        "As atividades formativas contribuem para a atuação prática dos residentes?",
+		        "As estratégias pedagógicas utilizadas favorecem o desenvolvimento profissional dos residentes?",
+				"O plano pedagógico está alinhado com as demandas de gestão no SUS?"
+			]
+        },
+        {
+            codigo: "Índice de Estratégias Pedagógicas",
+            perguntas: [
+				"O trabalho e os projetos desenvolvidos pelos residentes trouxeram melhorias para a rotina e os processos da prática profissional?",
+		        "As atividades e projetos desenvolvidos pelos residentes contribuem para melhorias no serviço?",
+		        "As estratégias pedagógicas estimulam reflexão crítica e resolução de problemas na prática profissional do residente?",				
+		        "O programa utiliza estratégias pedagógicas alinhadas às necessidades dos serviços e da formação multiprofissional?"
+			]
+        },
+        {
+            codigo: "Índice de Acompanhamento Pedagógico",
+            perguntas: ["O acompanhamento pedagógico no programa é adequado para o desenvolvimento dos residentes?"]
+        }
+    ],
+
+    relacional: [
+        {
+            codigo: "Índice de Relação Preceptor-Residente",
+            perguntas:[
+				"Os preceptores mantêm uma relação respeitosa, acessível e colaborativa com os residentes?",
+		        "Os residentes mantêm uma relação respeitosa, colaborativa e participativa com a preceptoria?"
+			]
+        },
+        {
+            codigo: "Índice de Relação Tutor-Residente",
+            perguntas: [
+				"Os tutores demonstram disponibilidade, escuta e apoio no acompanhamento pedagógico?",
+		        "Os tutores demonstram disponibilidade, escuta e apoio no acompanhamento pedagógico quando necessário?",
+		        "Os residentes participam de forma colaborativa do acompanhamento pedagógico realizado pelos tutores?"
+			]
+        },
+        {
+            codigo: "Índice Relação Multiprofissional",
+            perguntas: ["O ambiente do programa favorece relações respeitosas e colaborativas entre as diferentes categorias profissionais (integração multiprofissional)?"]
+        },
+        {
+            codigo: "Índice de Integração Ensino-Serviço",
+            perguntas: ["O programa promove integração entre a formação dos residentes e os serviços de saúde do SUS?"]
+        },
+        {
+            codigo: "Índice de Regularidade do Feedback",
+            perguntas: ["A frequência que recebo feedbacks é considerada:"]
+        },
+        {
+            codigo: "Índice de Qualidade do Feedback",
+            perguntas: ["Os feedbacks recebidos contribuem para meu desenvolvimento profissional?"]
+        },
+        {
+            codigo: "Índice de Acolhimento Institucional",
+            perguntas: ["Sinto-me integrado(a) e apoiado(a) institucionalmente no programa?"]
+        }
+    ],
+
+    organizacional: [
+        {
+            codigo: "Índice de Comunicação Institucional",
+            perguntas: [
+				"As informações institucionais são comunicadas de forma clara, compreensível e no tempo oportuno?"
+			]
+        },
+        {
+            codigo: "Índice de Organização do Programa",
+            perguntas: [
+				"O cronograma de atividades do programa é organizado e executado conforme planejado?"
+			]
+        },
+        {
+            codigo: "Índice de Clareza dos Fluxos",
+            perguntas: [
+				"Os fluxos de comunicação e tomada de decisão no programa são claros, bem definidos e compreendidos pelos participantes?"
+			]
+        },
+        {
+            codigo: "Índice de Suporte Institucional",
+            perguntas: [
+				"Existe abertura para diálogo e esclarecimento de dúvidas?"
+		    ]
+        },
+        {
+            codigo: "Índice de Clima Organizacional",
+            perguntas: [
+				"Você se sente seguro e confortável para expressar opiniões contrárias, sugerir melhorias operacionais ou relatar falhas sem receio de julgamentos?"
+		    ]
+        }
+    ],
+
+    governanca: [
+        {
+            codigo: "Índice de Transparência Institucional",
+            perguntas: [
+				"As informações sobre decisões, normas e processos do programa são disponibilizadas de forma clara, acessível e transparente pela coordenação?",
+		        "O programa assegura a transparência na divulgação de informações institucionais, relatórios e processos decisórios aos diferentes atores?"
+		    ]
+        },
+        {
+            codigo: "Índice de Capacidade de Resposta",
+            perguntas: [
+				"As demandas relacionadas à execução das atividades no serviço recebem retorno adequado e em tempo oportuno da coordenação?",
+		        "Os residentes, preceptores e tutores estão repassando as demandas do PREMUGS com tempo hábil para os coordenadores?"
+		    ]
+        },
+        {
+            codigo: "Índice de Monitoramento Institucional",
+            perguntas: [
+				"O programa utiliza dados e evidências para monitorar e aprimorar continuamente suas atividades formativas e assistenciais?",
+		        "O programa utiliza indicadores e evidências sistematicamente para apoiar decisões de gestão e melhoria contínua?"
+		    ]
+        },
+        {
+            codigo: "Índice de Cultura Avaliativa",
+            perguntas: [
+				"O quanto você percebe que a coordenação utiliza efetivamente os resultados das avaliações para promover melhorias reais no PREMUGS?",
+		        "Os resultados das avaliações são utilizados de forma sistemática e contínua na tomada de decisão do programa?"
+		    ]
+        },
+        {
+            codigo: "Grau de participação coletiva na gestão",
+            perguntas: [
+				"O quanto você sente que as suas ideias, sugestões e vivências práticas são efetivamente levadas em consideração pela coordenação na hora de tomar decisões importantes para o programa?",
+		        "Os preceptores são consultados e participam das decisões importantes relacionadas ao funcionamento do programa?",
+		        "Os tutores participam ativamente dos processos de tomada de decisão do programa?",
+		        "O programa promove participação efetiva de residentes, preceptores e tutores nas decisões institucionais?"
+		    ]
+        }
+    ],
+
+    sustentabilidade: [
+        {
+            codigo: "Índice de Impacto Formativo",
+            perguntas: [
+				"O PREMUGS contribui positivamente para sua formação profissional em gestão no SUS?",
+		        "O PREMUGS contribui para o desenvolvimento de competências em gestão dos residentes sob sua supervisão?",
+		        "As atividades do PREMUGS promovem o desenvolvimento consistente de competências em gestão e organização do trabalho em saúde?",
+		        "O PREMUGS atinge seus objetivos formativos em gestão no SUS?"
+		    ]
+        },
+        {
+            codigo: "Índice de Impacto nos Serviços",
+            perguntas: [
+				"Você conseguiu aplicar, na sua prática de gestão durante a residência, os conhecimentos adquiridos nas atividades formativas do PREMUGS?",
+		        "A atuação dos residentes contribui para melhorias nos processos de trabalho do serviço?"
+		    ]
+        },
+        {
+            codigo: "Índice de Potencial de Consolidação",
+            perguntas: [
+				"As iniciativas implantadas pelo PREMUGS na sua unidade continuam sendo realizadas de forma autônoma pela equipe, sem depender da presença contínua do programa?",
+		        "As práticas introduzidas pelo programa têm potencial de continuidade independente da presença do PREMUGS?",
+		        "O programa gera mudanças sustentáveis nos serviços que permanecem após o ciclo formativo?"
+		    ]
+        },
+        {
+            codigo: "Índice de Aprendizagem Institucional",
+            perguntas: [
+				"Durante a sua residência, você percebeu mudanças na integração entre ensino, serviço e comunidade promovidas pelo PREMUGS?",
+		        "O programa promove aprendizagem institucional e melhoria contínua nos processos de formação e trabalho em saúde?",
+		        "O PREMUGS promove mudanças institucionais duradouras na integração entre ensino, serviço e gestão?"
+		    ]
+        },
+        {
+            codigo: "Relação custo-efetividade operacional do PREMUGS",
+            perguntas: [
+				"Os recursos investidos no PREMUGS são proporcionais aos resultados formativos e operacionais alcançados pelo programa?"
+		    ]
+        }
+    ],
+
+    avaliacao_geral: [
+        {
+            codigo: "Índice de Avaliação Geral PREMUGS",
+            perguntas: [
+				"De forma geral, como você avalia o PREMUGS?",
+		        "Você recomendaria o PREMUGS para outros profissionais?"
+		    ]
+        },
+        {
+            codigo: "Índice de Utilidade Percebida no PREMUGS Avalia",
+            perguntas: [
+				"Quão útil você considera esta ferramenta de avaliação (PREMUGS Avalia) para a SMS de Florianópolis?"
+		    ]
+        }
+    ]
+
+};
+
+let allRows = [];
+let headers = [];
+let perfilColIdx = -1;
+let cicloColIdx  = -1;
+let numericCols  = [];    /* {idx, label, dim} */
+let gaugePremugsInst = null;
+
+let radarChartInst = null;
+let likertChartInst = null;
+let perfilChartInst = null;
+let cicloChartInst = null;	
+let perfilBarInst   = null;
+let perfilDimChartInst = null;
+let colAvaliaPremugs = -1;
+let colRecomendaria = -1;
+let colUtilidade = -1;	
+	
+/* ───────────── DATA LOAD ───────────── */
+async function loadData() {
+  document.getElementById('loading-state').style.display = 'flex';
+  document.getElementById('error-state').style.display   = 'none';
+  document.getElementById('dashboard').style.display     = 'none';
+
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
+
+  try {
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const csv = await resp.text();
+    const parsed = Papa.parse(csv, { skipEmptyLines: true });
+    if (!parsed.data || parsed.data.length < 2) throw new Error('Planilha vazia ou sem respostas.');
+
+    headers = parsed.data[0];
+    allRows  = parsed.data.slice(1);
+
+    detectColumns();
+
+	//console.log('colAvaliaPremugs', colAvaliaPremugs);
+	//console.log('colRecomendaria', colRecomendaria);
+	//console.log('colUtilidade', colUtilidade);
+	//console.table(headers);
+	  
+	populatePerfilFilter();
+	populateCicloFilter();
+	console.log("numericCols:", numericCols);
+    render();
+	showTab('geral');
+
+    document.getElementById('last-updated').textContent =
+       new Date().toLocaleString('pt-BR', { dateStyle:'short', timeStyle:'short' });
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('dashboard').style.display     = 'block';
+
+  } catch (e) {
+    console.error(e);
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('error-state').style.display   = 'flex';
+    document.getElementById('error-msg').textContent       = `Erro: ${e.message}`;
+  }
+}
+
+function showTab(tab, btn = null){
+
+    document.querySelectorAll('.tab-content')
+        .forEach(el => el.style.display='none');
+
+	document.querySelectorAll('.tab-btn')
+		.forEach(b => b.classList.remove('active'));
+	
+    document.getElementById('tab-' + tab)
+        .style.display = 'block';
+
+    if(btn){
+        btn.classList.add('active');
+    }
+    
+    // força redesenho dos gráficos
+    setTimeout(() => {
+
+		if(perfilChartInst)
+		    perfilChartInst.resize();
+		
+		if(perfilBarInst)
+		    perfilBarInst.resize();
+
+        if(radarChartInst)
+            radarChartInst.resize();
+
+        if(cicloChartInst)
+            cicloChartInst.resize();
+
+        if(perfilDimChartInst)
+            perfilDimChartInst.resize();
+
+    },100);
+}
+	
+/* ── Auto-detect key columns ── */
+function detectColumns(){
+
+	numericCols = [];
+
+	headers.forEach((h,i)=>{
+
+        const nome = normalizarTexto(h);
+
+        // AVALIAÇÃO GERAL
+		if(nome.includes('de forma geral') &&
+		   nome.includes('premugs')){
+		    colAvaliaPremugs = i;
+		}	
+		
+		if(nome.includes("recomendaria") &&
+		    nome.includes("premugs")){
+		    colRecomendaria = i;
+		}
+		
+		if(nome.includes('quao util') ||
+		   nome.includes('ferramenta de avaliacao')){
+		    colUtilidade = i;
+		}
+		
+        // PERFIL
+		if(
+		    nome.includes("papel") &&
+		    nome.includes("premugs")
+		){
+		    perfilColIdx = i;
+		}
+
+		// CICLO
+        if(nome.includes("ano/ciclo avaliado")){
+            cicloColIdx = i;
+        }
+		
+	    const dim =
+	        getDimensionFromQuestion(h);
+	
+	    if(
+	        ![
+	            'pedagogica',
+	            'relacional',
+	            'organizacional',
+	            'governanca',
+	            'sustentabilidade',
+	            'avaliacao_geral'
+	        ].includes(dim)
+	    ){
+	        return;
+	    }
+
+		// verifica se existe pelo menos uma resposta Likert
+
+        const hasLikert =
+            allRows.some(r => {
+
+                const v = parseLikert(r[i]);
+
+                return v !== null;
+
+        });
+
+		if(!hasLikert) return;
+
+		numericCols.push({
+		    idx:i,
+		    label:h,
+		    dim,
+		    perfil:getPerfisDaColuna(i)
+		});
+	
+	});
+    console.log("numericCols:", numericCols.length);
+    console.table(numericCols);	
+	
+	console.log("perfilColIdx =", perfilColIdx);
+	console.log("cicloColIdx =", cicloColIdx);
+}
+
+function identificarPerfilPorColuna(colIdx){
+
+    const perfis =
+        getPerfisDaColuna(colIdx);
+
+    if(!perfis.length){
+        return 'Não informado';
+    }
+
+    let perfil = perfis[0];
+
+    switch(perfil){
+
+        case 'Preceptor':
+            return 'Preceptor(a)';
+
+        case 'Tutor':
+            return 'Tutor(a)';
+
+        case 'Coordenador':
+            return 'Coordenador(a)';
+
+        default:
+            return perfil;
+    }
+}
+	
+function exportExcel(){
+
+    const wb = XLSX.utils.book_new();
+
+    const ws = XLSX.utils.aoa_to_sheet([
+        headers,
+        ...allRows
+    ]);
+
+    XLSX.utils.book_append_sheet(
+        wb,
+        ws,
+        "Respostas"
+    );
+
+    XLSX.writeFile(
+        wb,
+        "PREMUGS_Avalia.xlsx"
+    );
+}	
+
+function renderGauge(score,totalNotas){
+		
+		const percent = score/4;
+		const angle = -180 + (180*percent);
+		const x = 150 + 90*Math.cos(angle*Math.PI/180);
+		const y = 110 + 90*Math.sin(angle*Math.PI/180);
+		const html=`
+		<svg class="gauge-svg"
+		viewBox="0 0 300 180">
+		<path d="
+		M60 110
+		A90 90 0 0 1 110 32"
+		stroke="#e52420"
+		stroke-width="18"
+		fill="none"
+		/>
+		<path d="
+		M110 32
+		A90 90 0 0 1 190 32"
+		stroke="#d67a00"
+		stroke-width="18"
+		fill="none"
+		/>
+		<path d="
+		M190 32
+		A90 90 0 0 1 240 110"
+		stroke="#0b8457"
+		stroke-width="18"
+		fill="none"
+		/>
+		<line
+		x1="150"
+		y1="110"
+		x2="${x}"
+		y2="${y}"
+		stroke="#374151"
+		stroke-width="5"
+		stroke-linecap="round"
+		/>
+		<circle
+		cx="150"
+		cy="110"
+		r="10"
+		fill="#374151"
+		/>
+		<text
+		x="150"
+		y="150"
+		text-anchor="middle"
+		font-size="30"
+		font-weight="700"
+		fill="#0b8457">
+		${score.toFixed(1)}
+		</text>
+		<text
+		x="185"
+		y="150"
+		font-size="18"
+		fill="#94A3B8">
+		/ 4.0
+		</text>
+		</svg>
+		`;
+		
+		document.getElementById('premugsGauge').innerHTML=html;
+		document.getElementById('gaugeSubtitulo').innerHTML=
+		
+		`Média de todas as perguntas quantitativas
+		(escala 1-4) - ${totalNotas} notas`;
+}	
+	
+function renderGaugePremugs(rows){
+
+    const valores = rows.flatMap(r=>
+
+        numericCols
+            .map(c=>parseLikert(r[c.idx]))
+            .filter(v=>v!==null)
+
+    );
+
+    if(!valores.length) return;
+
+    const media = avg_(valores);
+
+
+    const ctx =
+        document.getElementById(
+            'gaugePremugs'
+        );
+
+    if(!ctx) return;
+
+
+    if(gaugePremugsInst){
+
+        gaugePremugsInst.destroy();
+
+    }
+
+
+    gaugePremugsInst = new Chart(ctx,{
+
+        type:'doughnut',
+
+        data:{
+
+            datasets:[{
+
+                data:[
+
+                    2,
+                    1,
+                    1
+
+                ],
+
+                backgroundColor:[
+
+                    '#E53935',
+                    '#F9A825',
+                    '#00876A'
+
+                ],
+
+                borderWidth:0,
+
+                circumference:180,
+
+                rotation:270
+
+            }]
+
+        },
+
+        options:{
+
+            responsive:true,
+
+            cutout:'75%',
+
+
+            plugins:{
+                legend:{
+                    display:false
+                }
+            }
+
+        },
+
+
+        plugins:[{
+
+            id:'needle',
+
+            afterDraw(chart){
+
+                const {
+
+                    ctx
+
+                } = chart;
+
+
+                const meta =
+                    chart.getDatasetMeta(0);
+
+
+                const x =
+                    meta.data[0].x;
+
+                const y =
+                    meta.data[0].y;
+
+
+
+                const angulo =
+
+                    (media-1)/3
+
+                    *
+
+                    Math.PI;
+
+
+
+                ctx.save();
+
+
+                ctx.translate(x,y);
+
+
+                ctx.rotate(
+
+                    -Math.PI+
+
+                    angulo
+
+                );
+
+
+                ctx.beginPath();
+
+                ctx.moveTo(0,-4);
+
+                ctx.lineTo(80,0);
+
+                ctx.lineTo(0,4);
+
+                ctx.fillStyle='#334155';
+
+                ctx.fill();
+
+
+                ctx.beginPath();
+
+                ctx.arc(
+
+                    0,
+                    0,
+                    8,
+                    0,
+                    2*Math.PI
+                );
+
+                ctx.fillStyle='#334155';
+
+                ctx.fill();
+
+
+
+                ctx.restore();
+
+
+
+                ctx.font='bold 34px sans-serif';
+
+                ctx.fillStyle='#00876A';
+
+                ctx.textAlign='center';
+
+
+                ctx.fillText(
+
+                    media.toFixed(1),
+
+                    x,
+
+                    y+40
+
+                );
+
+
+
+                ctx.font='18px sans-serif';
+
+                ctx.fillStyle='#64748B';
+
+
+                ctx.fillText(
+
+                    '/4.0',
+
+                    x+45,
+
+                    y+40
+
+                );
+
+            }
+
+        }]
+
+
+
+    });
+
+}
+
+function isQualitativa(label){
+
+	const texto = normalizarTexto(label);
+
+    const perguntasQualitativas = [
+        'quais aspectos pedagógicos do premugs',
+        'quais aspectos das relações interpessoais',
+        'quais aspectos da cultura organizacional',
+        'como você avalia a governança do premugs',
+        'o que seria necessário para aumentar a sustentabilidade',
+        'quais são os principais pontos fortes do premugs',
+        'principais desafios e fragilidades',
+        'o que você observou de positivo na ferramenta premugs avalia'
+    ];
+
+    return perguntasQualitativas.some(p =>
+        texto.includes(
+            normalizarTexto(p))
+    );
+}	
+
+function getDimensaoQualitativa(label){
+
+    const texto =
+        label.toLowerCase();
+
+    if(texto.includes('aspectos pedag'))
+        return 'pedagogica';
+
+    if(texto.includes('interpessoais'))
+        return 'relacional';
+
+    if(texto.includes('cultura organizacional'))
+        return 'organizacional';
+
+	if(texto.includes('aumentar a sustentabilidade'))
+        return 'sustentabilidade';
+
+    if(texto.includes('avalia a governan'))
+        return 'governanca';
+
+    if(texto.includes('pontos fortes'))
+        return 'avaliacao_geral';
+
+    if(texto.includes('desafios'))
+        return 'avaliacao_geral';
+
+    if(texto.includes('fragilidades'))
+        return 'avaliacao_geral';
+
+    if(texto.includes('premugs avalia'))
+        return 'avaliacao_geral';
+
+    return 'avaliacao_geral';
+}	
+	
+function renderQualitativas(rows){
+
+    const container =
+        document.getElementById(
+            'qualitativasContainer'
+        );
+
+    if(!container) return;
+
+	const perguntasAgrupadas = {};
+	
+	headers.forEach((h, idx) => {
+	
+	    if(!isQualitativa(h))
+	        return;
+	
+	    const chave =
+	        normalizarTexto(h);
+	
+	    if(!perguntasAgrupadas[chave]){
+	
+	        perguntasAgrupadas[chave] = {
+	            label: h,
+	            colunas: []
+	        };
+	
+	    }
+	
+	    perguntasAgrupadas[chave]
+	        .colunas.push(idx);
+	
+	});	
+
+		const grupos = {};
+
+		Object.values(perguntasAgrupadas)
+		.forEach(pergunta => {
+		
+		    const dimensao =
+		        getDimensaoQualitativa(
+		            pergunta.label
+		        );
+		
+		    if(!grupos[dimensao]){
+		        grupos[dimensao] = [];
+		    }
+		
+		    grupos[dimensao].push(pergunta);
+		
+		});
+	
+    let html = '';
+
+    Object.entries(grupos)
+	.forEach(([dimensao, perguntasDim]) => {
+		
+		const dimId = `quali-dim-${dimensao}`;
+		
+		html += `
+		<div class="dimensao-card">
+		
+		    <div class="dimensao-header accordion-header"
+		         onclick="toggleDimensaoQuali('${dimId}')">
+		
+		        <span>
+		            ${formatarNomeDimensao(dimensao)}
+		        </span>
+		
+		        <span>►</span>
+		
+		    </div>
+		
+		    <div class="accordion-body accordion-body-dim"
+		         id="${dimId}"
+		         style="display:none">
+		`;
+		
+	perguntasDim.forEach(pergunta => {
+
+        const respostasPorPerfil = {};
+
+		rows.forEach(r => {
+		
+		    pergunta.colunas.forEach(colIdx => {
+		
+		        const resposta =
+		            String(
+		                r[colIdx] || ''
+		            ).trim();
+		
+		        if(!resposta)
+		            return;
+		
+				let perfil;
+				
+				if(
+				    getDimensaoQualitativa(pergunta.label) === 'avaliacao_geral'
+				){
+				
+				    perfil =
+					    perfilColIdx >= 0
+					        ? (r[perfilColIdx] || 'Não informado')
+					        : 'Não informado';
+									
+				}else{
+				
+				    perfil =
+				        identificarPerfilPorColuna(colIdx);
+				
+				}
+		
+		        if(!respostasPorPerfil[perfil]){
+		            respostasPorPerfil[perfil] = [];
+		        }
+		
+		        respostasPorPerfil[perfil]
+		            .push(resposta);
+		
+		    });
+		});
+		
+        const totalRespostas =
+            Object.values(respostasPorPerfil)
+            .reduce(
+                (acc, arr) => acc + arr.length,
+                0
+            );
+
+        if(totalRespostas === 0)
+            return;
+
+		const perguntaId =
+		    `pergunta-${pergunta.colunas[0]}`;
+		
+		html += `
+		
+		<div class="qualitativa-card">
+		
+		    <div class="qualitativa-title accordion-header"
+		         onclick="togglePerguntaQualitativa('${perguntaId}')">
+		
+		        <span>${pergunta.label}</span>
+		
+		        <span>
+		            (${totalRespostas} respostas)
+		        </span>
+		
+		    </div>
+		
+		    <div class="accordion-body"
+		         id="${perguntaId}"
+		         style="display:none">
+		
+		`;			
+		const ordemPerfis = [
+		    'Residente',
+		    'Preceptor(a)',
+		    'Tutor(a)',
+			'Coordenador(a)'
+		];
+
+		const perfisOrdenados =
+			ordemPerfis.filter(
+				p => respostasPorPerfil[p]
+			);		
+		
+		perfisOrdenados.forEach(perfil => {
+		
+			const respostas =
+				respostasPorPerfil[perfil];
+
+            const perfilId =
+    			`${pergunta.colunas[0]}-${perfil}`
+                .replace(/\s+/g,'-')
+                .replace(/[^\w-]/g,'');
+
+            html += `
+
+                <div class="perfil-qualitativo">
+
+                    <div class="perfil-header"
+                         onclick="togglePerfilQualitativo('${perfilId}')">
+
+                        <span>${perfil}</span>
+
+                        <span>
+                            (${respostas.length} respostas)
+                        </span>
+
+                    </div>
+
+                    <div class="perfil-body"
+                         id="perfil-${perfilId}"
+                         style="display:none">
+
+            `;
+
+            respostas.forEach(resp => {
+
+                html += `
+                    <div class="qualitativa-resposta">
+                        ${resp}
+                    </div>
+                `;
+
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+
+        });
+
+		html += `
+		    </div>
+		</div>
+		`;
+	    });
+
+		html += `
+				</div>
+			</div>
+		`;
+
+	});		
+
+    container.innerHTML = html;
+}	
+
+function toggleDimensaoQuanti(nome){
+
+    const body =
+        document.getElementById(`dim-${nome}`);
+
+    const icon =
+        document.getElementById(`icon-${nome}`);
+
+    if(!body) return;
+
+    const aberto =
+        getComputedStyle(body).display !== 'none';
+
+    if(aberto){
+
+        body.style.display = 'none';
+
+        if(icon){
+            icon.textContent = '►';
+        }
+
+    }else{
+
+        body.style.display = 'block';
+
+        if(icon){
+            icon.textContent = '▼';
+        }
+
+    }
+}	
+
+function togglePerguntaQualitativa(id){
+
+    const el =
+        document.getElementById(id);
+
+    if(!el) return;
+
+    el.style.display =
+        el.style.display === 'none'
+            ? 'block'
+            : 'none';
+}	
+	
+function togglePerfilQualitativo(id){
+
+    const el =
+        document.getElementById(`perfil-${id}`);
+
+    if(!el) return;
+
+    if(el.style.display === 'none'){
+
+        el.style.display = 'block';
+
+    }else{
+
+        el.style.display = 'none';
+
+    }
+}					  
+	
+function similarity(a,b){
+
+    const wordsA = new Set(a.split(" "));
+    const wordsB = new Set(b.split(" "));
+
+    let common = 0;
+
+    wordsA.forEach(w => {
+        if(wordsB.has(w)) common++;
+    });
+
+    return common / Math.max(wordsA.size, wordsB.size);
+}
+
+function getPerfisDaColuna(idx){
+
+    const perfis = [];
+
+    if ((idx >= 5 && idx <= 35) || (idx >= 130 && idx <= 134)){
+        perfis.push('Residente');
+    }
+
+    if ((idx >= 36 && idx <= 69) || (idx >= 130 && idx <= 134)){
+        perfis.push('Preceptor');
+    }
+
+    if ((idx >= 70 && idx <= 101) || (idx >= 130 && idx <= 134)){
+        perfis.push('Tutor');
+    }
+
+    if (idx >= 102){
+        perfis.push('Coordenador');
+    }
+
+    return perfis;
+}	
+
+function normalizarTexto(txt) {
+
+    if (!txt) return '';
+
+    return txt
+        .toString()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+function getDimensionFromQuestion(label){
+
+    const texto =
+        normalizarTexto(label);
+
+    // regras diretas
+
+    if(texto.includes('sustentabilidade')){
+        return 'sustentabilidade';
+    }
+
+    if(texto.includes('governanca')){
+        return 'governanca';
+    }
+
+    if(texto.includes('relacoes interpessoais')){
+        return 'relacional';
+    }
+
+    if(texto.includes('cultura organizacional')){
+        return 'organizacional';
+    }
+
+    if(texto.includes('aspectos pedagogicos')){
+        return 'pedagogica';
+    }
+
+    // fallback por similaridade
+
+    let bestDim = null;
+    let bestScore = 0;
+
+    for(const [dim, indicadores] of Object.entries(INDICADORES)){
+
+        indicadores.forEach(ind => {
+
+            const perguntas =
+                ind.perguntas || [ind.pergunta];
+
+            perguntas.forEach(p => {
+
+                const score = similarity(
+                    texto,
+                    normalizarTexto(p)
+                );
+
+                if(score > bestScore){
+
+                    bestScore = score;
+                    bestDim = dim;
+
+                }
+
+            });
+
+        });
+
+    }
+
+    return bestScore > 0.85
+        ? bestDim
+        : null;
+}
+	
+function getIndicadorNome(pergunta) {
+
+    const texto = normalizarTexto(pergunta);
+
+    for (const indicadores of Object.values(INDICADORES)) {
+
+		const item = indicadores.find(ind => {
+		
+		    const lista =
+		        ind.perguntas || [ind.pergunta];
+		
+		    return lista.some(p =>
+		
+		        similarity(
+		            texto,
+		            normalizarTexto(p)
+		        ) >= 0.80
+		
+		    );
+		
+		});
+
+        if (item) {
+            return item.codigo;
+        }
+    }
+
+    return pergunta;
+}
+
+/* ── Filters ── */
+function getFiltered() {
+  const perfil = document.getElementById('filter-perfil').value;
+  const ciclo  = document.getElementById('filter-ciclo').value;
+  return allRows.filter(row => {
+    if (perfil !== 'todos' && perfilColIdx >= 0 && row[perfilColIdx] !== perfil) return false;
+    if (ciclo  !== 'todos' && cicloColIdx  >= 0 && row[cicloColIdx]  !== ciclo)  return false;
+    return true;
+  });
+}
+
+function populatePerfilFilter(){
+
+    if(perfilColIdx < 0) return;
+
+    const sel =
+        document.getElementById('filter-perfil');
+
+    sel.innerHTML =
+        '<option value="todos">Todos os perfis</option>';
+
+    const perfis = [
+        ...new Set(
+            allRows
+                .map(r => r[perfilColIdx])
+                .filter(Boolean)
+        )
+    ].sort();
+
+    perfis.forEach(p => {
+
+        const opt =
+            document.createElement('option');
+
+        opt.value = p;
+        opt.textContent = p;
+
+        sel.appendChild(opt);
+    });
+}	
+	
+function populateCicloFilter() {
+
+    if(cicloColIdx < 0) return;
+
+    const sel =
+        document.getElementById('filter-ciclo');
+
+    sel.innerHTML =
+        '<option value="todos">Todos os ciclos</option>';
+
+    const vals = [
+        ...new Set(
+            allRows
+                .map(r => r[cicloColIdx])
+                .filter(Boolean)
+        )
+    ].sort();
+
+    vals.forEach(v => {
+
+        const o =
+            document.createElement('option');
+
+        o.value = v;
+        o.textContent = v;
+
+        sel.appendChild(o);
+    });
+}
+
+/* ───────────── RENDER ───────────── */
+function render() {
+  const rows = getFiltered();
+
+  // 1. KPIs
+  renderKPIs(rows);
+
+  // 2. Avaliação Geral
+  renderAvaliacaoGeral(rows);
+  renderGaugePremugs(rows);	
+
+  // 3. Demais análises	
+  renderDimBars(rows);
+  renderRadar(rows);
+  renderLikert(rows);
+  renderPerfilCharts(rows);
+  renderCicloChart(rows);
+  renderPerfilDimensaoChart(rows);
+
+  // 4. Qualitativas	
+  renderQualitativas(rows);	
+
+  // 5. Tabela	
+  renderTable(rows);
+}
+
+/* ── KPIs ── */
+function renderKPIs(rows) {
+  const total = rows.length;
+  const allVals = rows.flatMap(r => numericCols.map(c => parseLikert(r[c.idx])).filter(v => v !== null));
+  const avg = allVals.length ? avg_(allVals) : 0;
+  const progresso = Math.min((avg/4)*100, 100);
+	renderGauge(
+	    avg,
+	    allVals.length
+	);		
+  const pct4 = allVals.length ? (allVals.filter(v => v === 4).length / allVals.length * 100) : 0;
+  const pct3 = allVals.length ? (allVals.filter(v => v === 3).length / allVals.length * 100) : 0;
+  const pct2 = allVals.length ? (allVals.filter(v => v === 2).length / allVals.length * 100) : 0;
+  const pctAtencao = pct2 + pct3;
+  const pct1 = allVals.length ? (allVals.filter(v => v === 1).length / allVals.length * 100) : 0;
+  
+  const nivel4 = allVals.filter(v => v === 4).length;
+  const nivel3 = allVals.filter(v => v === 3).length;
+  const nivel2 = allVals.filter(v => v === 2).length;
+  const nivel1 = allVals.filter(v => v === 1).length;
+  const totalAvaliacoes = nivel1 + nivel2 + nivel3 + nivel4;
+  const aprovacao = totalAvaliacoes? ((nivel3 + nivel4) / totalAvaliacoes) * 100 : 0;
+	
+  const perfis = perfilColIdx >= 0 ? new Set(rows.map(r => r[perfilColIdx]).filter(Boolean)).size : '—';
+
+	const dimensoesAtivas = new Set();
+
+	numericCols.forEach(col => {
+
+		const possuiDados = rows.some(r => {
+
+			const valor =
+				parseLikert(r[col.idx]);
+
+			return !isNaN(valor);
+
+		});
+
+		if(possuiDados){
+			dimensoesAtivas.add(col.dim);
+		}
+
+	});
+
+	const scores = dimScores(rows);
+
+	const valores = Object.values(scores)
+    .filter(v => v > 0);
+
+	const scoreGeral =
+    valores.length
+        ? avg_(valores)
+        : 0;
+	
+	//const progresso = (avg / 4) * 100;
+
+  const data = [
+    { label: '📈 Média Geral', value: avg.toFixed(2), sub: 'escala 1–4', color: '#00876A', badge: scoreLabel(avg) },
+    { label: '👍 Aprovação Geral', value: aprovacao.toFixed(0) + '%', sub:`das avaliações<br> Excelente = ${pct4.toFixed(0)} %<br> Bom = ${pct3.toFixed(0)} %`, color: '#004B87', badge: null },	  
+    { label: '⭐ Excelência', value: pct4.toFixed(0) + '%', sub: 'das avaliações', color: '#00876A', badge: null },
+    { label: '⚠️ Atenção', value: pctAtencao.toFixed(0) + '%', sub: `das avaliações<br> Bom = ${pct3.toFixed(0)} %<br> Adequado = ${pct2.toFixed(0)} %`, color: '#D67A00', badge: null },
+    { label: '🚨 Críticos', value: pct1.toFixed(0) + '%', sub: 'das avaliações', color: '#D8482F', badge: null },
+	{ label: '📊 Cobertura', value: scoreCobertura(perfis, dimensoesAtivas.size), sub:`👥 ${perfis} perfis<br> 📊 ${dimensoesAtivas.size} dimensões`, color:'#0087A8', badge: null},	  
+    { label: '📝 Respostas', value: total, sub: 'respondentes', color: '#3B5FCC', badge: null },
+  ];
+
+	document.getElementById('kpi-grid').innerHTML = data.map(d => `
+		<div class="kpi-card" style="--accent-color:${d.color}">
+		    <div class="kpi-label">
+		        ${d.label}
+		    </div>
+		    <div class="kpi-value">
+		        ${d.value}
+		    </div>
+		    <div class="kpi-sub">
+		        ${d.sub}
+		    </div>
+		    ${d.label === '📈 Média Geral' ? `
+		        <div class="kpi-progress">
+		            <div class="kpi-progress-fill"
+		                 style="
+		                    width:${progresso}%;
+		                    background:${d.color};
+		                 ">
+		            </div>
+		        </div>
+		    ` : ''}
+		    ${d.badge ?
+		        `<span class="kpi-badge"
+		               style="
+					        background:${d.color}20;
+					        color:${d.color};
+					        margin-top:8px;
+					        display:inline-block;
+		               ">
+		            ${d.badge}
+		        </span>`
+		        : ''
+		    }
+		</div>
+	`).join('');	
+  //document.getElementById('kpi-grid').innerHTML = data.map(d => `
+  //  <div class="kpi-card" style="--accent-color:${d.color}">
+  //    <div class="kpi-label">${d.label}</div>
+  //    <div class="kpi-value">${d.value}</div>
+  //    <div class="kpi-sub">${d.sub}</div>
+  //    ${d.badge ? `<span class="kpi-badge" style="background:${d.color}20;color:${d.color}">${d.badge}</span>` : ''}
+  //  </div>
+  //`).join('');
+}
+
+/* ── Dimension bars ── */
+function renderDimBars(rows) {
+
+  const scores = dimScores(rows);
+
+  const el = document.getElementById('dim-bars');
+
+  el.innerHTML = Object.entries(DIMS).map(([key, cfg]) => {
+
+    const s = scores[key] || 0;
+    const pct = (s / 4 * 100).toFixed(1);
+
+    return `
+      <div class="dim-row"
+           onclick="showDimensionDetails('${key}')">
+
+        <div class="dim-label">
+          ${cfg.label}
+        </div>
+
+        <div class="dim-bar-bg">
+          <div class="dim-bar-fill"
+               style="width:${pct}%;
+               background:${cfg.color}">
+          </div>
+        </div>
+
+        <div class="dim-score"
+             style="color:${cfg.color}">
+          ${s.toFixed(2)}
+        </div>
+
+      </div>
+    `;
+  }).join('');
+}
+
+/* ── Radar ── */
+function renderRadar(rows) {
+  const scores = dimScores(rows);
+  const labels  = Object.values(DIMS).map(d => d.label);
+  const data    = Object.keys(DIMS).map(k => +(scores[k] || 0).toFixed(2));
+
+  if (radarChartInst) radarChartInst.destroy();
+  const ctx = document.getElementById('radarChart');
+  radarChartInst = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Média',
+        data,
+        backgroundColor: 'rgba(0,75,135,.12)',
+        borderColor: '#004B87',
+        pointBackgroundColor: '#004B87',
+        pointRadius: 4,
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        r: {
+          min: 1, max: 4,
+          ticks: { stepSize: 1, font: { size: 10 }, color: '#5C6B82' },
+          pointLabels: { font: { size: 11 }, color: '#1A2332' },
+          grid: { color: '#DDE3ED' },
+          angleLines: { color: '#DDE3ED' },
+        }
+      }
+    }
+  });
+}
+
+function formatarNomeDimensao(dim){
+
+    const nomes = {
+        pedagogica: '📘 Pedagógica',
+        relacional: '🤝 Relacional',
+        organizacional: '🏢 Organizacional',
+        governanca: '⚖️ Governança',
+        sustentabilidade: '🌱 Sustentabilidade',
+		avaliacao_geral: '⭐ Avaliação Geral'
+    };
+
+    return nomes[dim] || dim;
+}	
+	
+/* ── Likert stacked bar ── */
+function renderLikert(rows){
+
+    const grupos = {};
+
+    numericCols.forEach(col => {
+
+        const dimensao = col.dim;
+
+        const indicador =
+            getIndicadorNome(col.label);
+
+        if(!grupos[dimensao]){
+            grupos[dimensao] = {};
+        }
+
+        if(!grupos[dimensao][indicador]){
+            grupos[dimensao][indicador] = [];
+        }
+
+        grupos[dimensao][indicador].push(col);
+
+    });
+
+    const container =
+        document.getElementById('indicadoresAccordion');
+
+	const scores = dimScores(rows);
+	
+    let html = '';
+    let idx = 0;
+
+    Object.entries(grupos).forEach(([dimensao, indicadores]) => {
+
+	    const mediaDim =
+    		scores[dimensao] || 0;
+		
+		let cor;
+		
+		if(mediaDim  < 2){
+		    cor = '#e52420';
+		}
+		else if(mediaDim  <= 3){
+		    cor = '#d67a00';
+		}
+		else{
+		    cor = '#0b8457';
+		}		
+		
+		html += `
+		<div class="dimensao-accordion">
+		
+		    <div class="dimensao-header"
+			     style="
+			        background:${cor};
+			     "			
+		         onclick="toggleDimensaoQuanti('${dimensao}')">
+		
+		        <span>${formatarNomeDimensao(dimensao)}</span>
+		
+			    <div class="dimensao-info">
+			
+			        <small class="dimensao-media">
+			            Média: ${mediaDim.toFixed(2)}
+			        </small>
+			
+			        <span id="icon-${dimensao}">
+			            ►
+			        </span>
+			
+			    </div>		
+		    </div>
+		
+		    <div class="dimensao-body"
+			     id="dim-${dimensao}"
+			     style="display:none;">
+		`;
+
+        Object.entries(indicadores).forEach(([indicador, cols]) => {
+        
+			idx++;
+
+            const vals = [];
+
+            cols.forEach(col => {
+
+                rows.forEach(r => {
+
+                    const v =
+                        parseLikert(r[col.idx]);
+
+                    if(v !== null){
+                        vals.push(v);
+                    }
+
+                });
+
+            });
+
+            const media =
+                vals.length
+                ? avg_(vals).toFixed(2)
+                : "0.00";
+
+            const total =
+                vals.length || 1;
+
+            const n4 =
+                vals.filter(v => v === 4).length;
+
+            const n3 =
+                vals.filter(v => v === 3).length;
+
+            const n2 =
+                vals.filter(v => v === 2).length;
+
+            const n1 =
+                vals.filter(v => v === 1).length;
+
+            const p4 =
+                ((n4 / total) * 100).toFixed(1);
+
+            const p3 =
+                ((n3 / total) * 100).toFixed(1);
+
+            const p2 =
+                ((n2 / total) * 100).toFixed(1);
+
+            const p1 =
+                ((n1 / total) * 100).toFixed(1);
+
+            const perguntasHtml = cols.map(col => {
+
+                const respostas = rows
+                    .map(r => parseLikert(r[col.idx]))
+                    .filter(v => v !== null);
+
+                const totalPerg =
+                    respostas.length || 1;
+
+                const q4 =
+                    respostas.filter(v => v === 4).length;
+
+                const q3 =
+                    respostas.filter(v => v === 3).length;
+
+                const q2 =
+                    respostas.filter(v => v === 2).length;
+
+                const q1 =
+                    respostas.filter(v => v === 1).length;
+
+                const pp4 =
+                    ((q4 / totalPerg) * 100).toFixed(1);
+
+                const pp3 =
+                    ((q3 / totalPerg) * 100).toFixed(1);
+
+                const pp2 =
+                    ((q2 / totalPerg) * 100).toFixed(1);
+
+                const pp1 =
+                    ((q1 / totalPerg) * 100).toFixed(1);
+
+                const mediaPerg =
+                    respostas.length
+                    ? avg_(respostas).toFixed(2)
+                    : "0.00";
+
+                return `
+
+                    <li style="margin-bottom:14px">
+
+                        <strong>
+                            ${Array.isArray(col.perfil)
+                                ? col.perfil.join(", ")
+                                : col.perfil}
+                        </strong>
+
+                        <br>
+
+                        ${col.label}
+
+                        <div style="
+                            margin-top:6px;
+                            margin-left:16px;
+                            font-size:12px;
+                            color:#555;
+                        ">
+
+                            Média:
+                            <strong>${mediaPerg}</strong>
+
+                            &nbsp;|&nbsp;
+
+                            Respostas:
+                            <strong>${respostas.length}</strong>
+
+                            <br>
+
+                            Excelente:
+                            <strong>${pp4}% (${q4})</strong>
+
+                            &nbsp;•&nbsp;
+
+                            Bom:
+                            <strong>${pp3}% (${q3})</strong>
+
+                            &nbsp;•&nbsp;
+
+                            Adequado:
+                            <strong>${pp2}% (${q2})</strong>
+
+                            &nbsp;•&nbsp;
+
+                            Insatisfatório:
+                            <strong>${pp1}% (${q1})</strong>
+
+                        </div>
+
+                    </li>
+
+                `;
+
+            }).join('');
+
+			let corIndicador;
+			
+			if(parseFloat(media) < 2){
+			    corIndicador = '#ef6b64';
+			}
+			else if(parseFloat(media) <= 3){
+			    corIndicador = '#e9a73b';
+			}
+			else{
+			    corIndicador = '#2fa36d';
+			}			
+			
+            html += `
+
+                <div class="accordion-item">
+
+                    <div class="accordion-header"
+                         onclick="toggleAccordion(${idx})"
+					     style="
+					        background:${corIndicador};
+					        color:white;
+					        border-radius:8px;">
+
+                        <span>${indicador}</span>
+
+                        <span>
+                            Média: ${media}
+                        </span>
+
+                    </div>
+
+                    <div class="accordion-body"
+                         id="acc-${idx}">
+
+                        <p>
+                            <strong>Total de respostas:</strong>
+                            ${vals.length}
+                        </p>
+
+                        <ul>
+                            ${perguntasHtml}
+                        </ul>
+
+                        <table class="resumo-likert">
+
+                            <thead>
+                                <tr>
+                                    <th>Nível</th>
+                                    <th>Descrição</th>
+                                    <th>%</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <tr>
+                                    <td>
+                                        <span class="nivel-dot nivel-4"></span>
+                                        4
+                                    </td>
+                                    <td>Excelente</td>
+                                    <td>${p4}% (${n4})</td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <span class="nivel-dot nivel-3"></span>
+                                        3
+                                    </td>
+                                    <td>Bom</td>
+                                    <td>${p3}% (${n3})</td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <span class="nivel-dot nivel-2"></span>
+                                        2
+                                    </td>
+                                    <td>Adequado</td>
+                                    <td>${p2}% (${n2})</td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <span class="nivel-dot nivel-1"></span>
+                                        1
+                                    </td>
+                                    <td>Insatisfatório</td>
+                                    <td>${p1}% (${n1})</td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        });
+
+				html += `
+				    </div>
+				</div>
+				`;
+    });
+    container.innerHTML = html;
+}
+	
+function toggleAccordion(id){
+
+    const body =
+        document.getElementById(`acc-${id}`);
+
+    body.classList.toggle('open');
+}
+
+function toggleDimensaoQuali(id){
+
+    const body =
+        document.getElementById(id);
+
+    if(!body) return;
+
+    const header =
+        body.previousElementSibling;
+
+    const icon =
+        header.querySelector('span:last-child');
+
+    const aberto =
+        getComputedStyle(body).display !== 'none';
+
+    if(aberto){
+
+        body.style.display = 'none';
+
+        if(icon)
+            icon.textContent = '►';
+
+    }else{
+
+        body.style.display = 'block';
+
+        if(icon)
+            icon.textContent = '▼';
+
+    }
+}
+	
+function mostrarDetalheIndicador(
+    indicador,
+    perguntas,
+    rows
+){
+
+    const detalhe =
+        document.getElementById(
+            'likertDetalhe'
+        );
+
+    const vals = [];
+
+    perguntas.forEach(col => {
+
+        rows.forEach(r => {
+
+            const v =
+                parseLikert(r[col.idx]);
+
+            if(v !== null){
+                vals.push(v);
+            }
+
+        });
+
+    });
+
+    const media =
+        vals.length
+        ? avg_(vals).toFixed(2)
+        : '0.00';
+
+    const htmlPerguntas =
+        perguntas.map(col => {
+
+			const respostas = rows
+			    .map(r => parseLikert(r[col.idx]))
+			    .filter(v => v !== null);
+			
+			const total = respostas.length;
+			
+			const q4 = respostas.filter(v => v === 4).length;
+			const q3 = respostas.filter(v => v === 3).length;
+			const q2 = respostas.filter(v => v === 2).length;
+			const q1 = respostas.filter(v => v === 1).length;
+			
+			const p4 = total ? (q4 / total * 100).toFixed(1) : 0;
+			const p3 = total ? (q3 / total * 100).toFixed(1) : 0;
+			const p2 = total ? (q2 / total * 100).toFixed(1) : 0;
+			const p1 = total ? (q1 / total * 100).toFixed(1) : 0;
+			
+			const media = total
+			    ? (respostas.reduce((a,b)=>a+b,0)/total).toFixed(2)
+			    : '-';
+			
+            const perfil =
+                Array.isArray(col.perfil)
+                ? col.perfil.join(', ')
+                : col.perfil;
+			return `
+			<li style="margin-bottom:14px">
+			
+			    <strong>${getPerfilNome(col.label)}</strong>
+			
+			    <div style="margin-left:20px">
+			
+			        ${col.label}
+			
+			        <div style="
+			            margin-top:6px;
+			            margin-left:14px;
+			            font-size:12px;
+			        ">
+			
+			            Média: <b>${media}</b>
+			            • Respostas: <b>${total}</b>
+			
+			            <table style="
+			                margin-top:6px;
+			                font-size:11px;
+			                border-collapse:collapse">
+			
+			                <tr>
+			                    <td>🟢 4</td>
+			                    <td style="padding-left:8px">Excelente</td>
+			                    <td style="padding-left:12px">
+			                        <b>${p4}% (${q4})</b>
+			                    </td>
+			                </tr>
+			
+			                <tr>
+			                    <td>🟩 3</td>
+			                    <td style="padding-left:8px">Bom</td>
+			                    <td style="padding-left:12px">
+			                        <b>${p3}% (${q3})</b>
+			                    </td>
+			                </tr>
+			
+			                <tr>
+			                    <td>🟨 2</td>
+			                    <td style="padding-left:8px">Adequado</td>
+			                    <td style="padding-left:12px">
+			                        <b>${p2}% (${q2})</b>
+			                    </td>
+			                </tr>
+			
+			                <tr>
+			                    <td>🟥 1</td>
+			                    <td style="padding-left:8px">Insatisfatório</td>
+			                    <td style="padding-left:12px">
+			                        <b>${p1}% (${q1})</b>
+			                    </td>
+			                </tr>
+			
+			            </table>
+			
+			        </div>
+			
+			    </div>
+			
+			</li>
+			`;
+        }).join('');
+
+    detalhe.innerHTML = `
+
+        <h3 style="margin-bottom:10px">
+            ${indicador}
+        </h3>
+
+        <p>
+            <strong>Média:</strong>
+            ${media}
+        </p>
+
+        <p>
+            <strong>Total de respostas:</strong>
+            ${vals.length}
+        </p>
+
+        <hr style="margin:12px 0">
+
+        <strong>Perguntas do indicador</strong>
+
+        <ul style="margin-top:10px">
+            ${htmlPerguntas}
+        </ul>
+    `;
+
+    detalhe.style.display = 'block';
+
+    detalhe.scrollIntoView({
+        behavior:'smooth',
+        block:'start'
+    });
+}	
+
+/* ── Perfil charts ── */
+function renderPerfilCharts(rows) {
+  /* Donut */
+  const perfilMap = {};
+  rows.forEach(r => {
+    const p = (perfilColIdx >= 0 ? r[perfilColIdx] : null) || 'Não informado';
+    perfilMap[p] = (perfilMap[p] || 0) + 1;
+  });
+
+  const ordemPerfis = [
+	  'Residente',
+	  'Preceptor(a)',
+	  'Tutor(a)',
+	  'Coordenador(a)'
+  ];
+  const pLabels = ordemPerfis.filter(p => perfilMap[p]);
+  const pData = pLabels.map(p => perfilMap[p]);
+  const pColors = ['#3B5FCC','#00876A','#9B59B6','#D8482F','#0087A8','#F0A500'];
+
+  if (perfilChartInst) perfilChartInst.destroy();
+  perfilChartInst = new Chart(document.getElementById('perfilChart'), {
+    type: 'doughnut',
+    data: {
+      labels: pLabels,
+      datasets: [{ data: pData, backgroundColor: pColors, borderWidth: 2, borderColor: '#fff' }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'right', labels: { font: {size:11}, boxWidth: 12, padding: 10 } },
+        tooltip: { callbacks: { label: i => ` ${i.label}: ${i.raw} (${(i.raw/rows.length*100).toFixed(0)}%)` } }
+      }
+    }
+  });
+
+  /* Bar: avg by perfil */
+  const perfilAvg = {};
+  pLabels.forEach(p => {
+    const pRows = perfilColIdx >= 0 ? rows.filter(r => (r[perfilColIdx]||'Não informado') === p) : rows;
+    const vals = pRows.flatMap(r => numericCols.map(c => parseLikert(r[c.idx])).filter(v => v !== null));
+    perfilAvg[p] = vals.length ? +avg_(vals).toFixed(2) : 0;
+  });
+
+  if (perfilBarInst) perfilBarInst.destroy();
+  perfilBarInst = new Chart(document.getElementById('perfilBarChart'), {
+    type: 'bar',
+    data: {
+      labels: pLabels,
+      datasets: [{
+        label: 'Média',
+        data: pLabels.map(p => perfilAvg[p]),
+        backgroundColor: pColors,
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        y: { min: 1, max: 4, ticks: { stepSize: 1, font:{size:10} } },
+        x: { ticks: { font:{size:11} } }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: i => ` Média: ${i.raw}` } }
+      }
+    }
+  });
+}
+
+function renderCicloChart(rows){
+
+    if(cicloColIdx < 0){
+        return;
+    }
+
+    const ciclos = [
+        ...new Set(
+            rows
+                .map(r => r[cicloColIdx])
+                .filter(Boolean)
+        )
+    ];
+
+    const medias = ciclos.map(ciclo => {
+
+        const cicloRows =
+            rows.filter(
+                r => r[cicloColIdx] === ciclo
+            );
+
+        const valores =
+            cicloRows.flatMap(r =>
+                numericCols
+                    .map(c => parseLikert(r[c.idx]))
+                    .filter(v => v !== null)
+            );
+
+        return valores.length
+            ? avg_(valores)
+            : 0;
+
+    });
+
+	if(cicloChartInst && typeof cicloChartInst.destroy === 'function'){
+	    cicloChartInst.destroy();
+	}
+
+    cicloChartInst =
+        new Chart(
+            document.getElementById('cicloChart'),
+            {
+                type:'bar',
+
+                data:{
+                    labels:ciclos,
+
+                    datasets:[{
+
+                        label:'Média Geral',
+
+                        data:medias,
+
+                        borderRadius:8
+
+                    }]
+                },
+
+                options:{
+
+                    responsive:true,
+
+                    maintainAspectRatio:false,
+
+                    scales:{
+
+                        y:{
+                            min:1,
+                            max:4
+                        }
+
+                    }
+
+                }
+            }
+        );
+}
+
+function renderPerfilDimensaoChart(rows){
+
+    const perfis = [
+        'Residente',
+        'Preceptor',
+        'Tutor',
+        'Coordenador'
+    ];
+									
+    const dimensoes = [
+        'pedagogica',
+        'relacional',
+        'organizacional',
+        'governanca',
+        'sustentabilidade'
+    ];
+
+    const labels = [
+        'Pedagógica',
+        'Relacional',
+        'Organizacional',
+        'Governança',
+        'Sustentabilidade'
+    ];
+
+    const datasets = perfis.map((perfil, idx) => {
+
+        const medias = dimensoes.map(dim => {
+
+            const cols = numericCols.filter(c =>
+                c.dim === dim &&
+                c.perfil.includes(perfil)
+            );
+
+            const valores = [];
+
+            rows.forEach(row => {
+
+                const perfilResp =
+                    (row[perfilColIdx] || '')
+                    .toLowerCase();
+
+                if(
+                    !perfilResp.includes(
+                        perfil.toLowerCase()
+                    )
+                ){
+                    return;
+                }
+
+                cols.forEach(col => {
+
+                    const v =
+                        parseLikert(
+                            row[col.idx]
+                        );
+
+                    if(v !== null){
+                        valores.push(v);
+                    }
+
+                });
+
+            });
+
+            return valores.length
+                ? avg_(valores)
+                : 0;
+
+        });
+
+        const cores = [
+            '#3367D6',
+            '#0B8457',
+            '#D97706',
+            '#7C3AED'
+        ];
+
+        return {
+            label: perfil,
+            data: medias,
+            backgroundColor: cores[idx]
+        };
+
+    });
+
+    const ctx =
+        document
+        .getElementById('perfilDimChart');
+
+    if(!ctx) return;
+
+    if(perfilDimChartInst){
+        perfilDimChartInst.destroy();
+    }
+
+    perfilDimChartInst =
+        new Chart(ctx,{
+            type:'bar',
+
+            data:{
+                labels,
+                datasets
+            },
+
+            options:{
+                responsive:true,
+				maintainAspectRatio:false,
+
+                plugins:{
+                    legend:{
+                        position:'bottom'
+                    }
+                },
+
+                scales:{
+                    y:{
+                        min:0,
+                        max:4
+                    }
+                }
+            }
+        });
+}
+
+/* ── Avaliação geral ── */
+function renderAvaliacaoGeral(rows){
+    renderPremugsChart(rows);
+    renderRecomendacaoChart(rows);
+    renderUtilidadeScore(rows);
+}	
+
+/* ── Gráfico "Como avalia o PREMUGS" ── */
+let premugsChart;
+
+function renderPremugsChart(rows){
+
+    if(colAvaliaPremugs < 0) return;
+
+    const notas = [1,2,3,4].map(n =>
+        rows.filter(r =>
+            parseLikert(r[colAvaliaPremugs]) === n
+        ).length
+    );
+
+    const ctx =
+        document.getElementById('premugsChart');
+
+    if(!ctx) return;
+
+    if(premugsChart)
+        premugsChart.destroy();
+
+	const total =
+    notas.reduce((a,b)=>a+b,0);
+
+	const soma =
+	    notas.reduce(
+	        (acc,qtd,idx)=>acc + ((idx+1)*qtd),
+	        0
+	    );
+	
+	const media =
+	    total ? soma / total : 0;
+	
+	document.getElementById('premugsResumo').innerHTML = `
+	    Média <strong>${media.toFixed(1)}</strong>/4.0 · ${total} respostas
+	`;
+	
+    premugsChart = new Chart(ctx,{
+
+        type:'bar',
+
+        data:{
+            labels:[
+                'Insatisfatório',
+                'Adequado',
+                'Bom',
+                'Excelente'
+            ],
+            datasets:[{
+                data:notas,
+                backgroundColor:'#00876A'
+            }]
+        },
+
+        options:{
+            responsive:true,
+            plugins:{
+                legend:{display:false}
+            }
+        }
+
+    });
+
+}	
+
+/* ── Gráfico "Recomendaria o PREMUGS" ── */	
+let recomendacaoChart;
+
+function renderRecomendacaoChart(rows){
+
+    if(colRecomendaria < 0) return;
+
+    const sim =
+        rows.filter(r =>
+
+            String(
+                r[colRecomendaria] || ''
+            )
+            .toLowerCase()
+            .includes('sim')
+
+        ).length;
+
+    const nao =
+        rows.length - sim;
+
+    const ctx =
+        document.getElementById('recomendacaoChart');
+
+    if(!ctx) return;
+
+    if(recomendacaoChart)
+        recomendacaoChart.destroy();
+
+	const total = sim + nao;
+	
+	document.getElementById('recomendacaoResumo').innerHTML = `
+	    ${total} respostas
+	`;	
+
+    recomendacaoChart = new Chart(ctx,{
+
+        type:'doughnut',
+
+        data:{
+            labels:['Sim','Não'],
+            datasets:[{
+                data:[sim,nao],
+                backgroundColor:[
+                    '#00876A',
+                    '#D8482F'
+                ]
+            }]
+        }
+
+    });
+
+}
+
+/* ── Utilidade do PREMUGS Avalia ── */
+function renderUtilidadeScore(rows){
+
+    if(colUtilidade < 0) return;
+
+    const notas =
+        rows
+        .map(r =>
+            parseLikert(
+                r[colUtilidade]
+            )
+        )
+        .filter(v => v !== null);
+
+    if(!notas.length) return;
+
+    const media =
+        avg_(notas);
+	
+	document.getElementById('utilidadeResumo').innerHTML = `
+	    ${notas.length} respostas
+	`;
+    document.getElementById('utilidadeScore').innerHTML = `
+    <div>
+        <div class="score-number">
+            ${media.toFixed(1)}
+        </div>
+        <div class="score-label">
+            de 4.0
+        </div>
+    </div>`;
+}
+	
+/* ── Table ── */
+function renderTable(rows) {
+  const sample = rows.slice(-50).reverse();
+  document.getElementById('resp-count').textContent = `(${rows.length} total)`;
+
+	const showCols = [
+		0,
+		perfilColIdx,
+		cicloColIdx
+	].filter(i => i >= 0).filter((v, i, a) => a.indexOf(v) === i);
+
+  const thead = document.getElementById('table-header');
+  thead.innerHTML =
+    showCols.map(i =>
+        `<th>${headers[i] || 'Col '+i}</th>`
+    ).join('')
+    + `
+      <th>Média</th>
+      <th style="width:70px;text-align:center">
+        Detalhes
+      </th>
+    `;
+
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = sample.map((row,rowIndex) => {
+    const numVals = numericCols.map(c => parseLikert(row[c.idx])).filter(v => v !== null);
+    const avg = numVals.length ? avg_(numVals) : null;
+    //const progresso = (avg / 4) * 100;	  
+    const cells = showCols.map(i => `<td>${row[i] || '—'}</td>`).join('');
+    const avgCell = avg !== null
+      ? `<td><span class="score-pill sp-${Math.round(avg)}">${avg.toFixed(2)}</span></td>`
+      : '<td>—</td>';
+	return `
+		<tr>
+		    ${cells}
+		    ${avgCell}
+		
+		    <td style="text-align:center">
+		
+		        <button
+		            onclick="showResponseDetails(${allRows.indexOf(row)})"
+		            style="
+		                border:none;
+		                background:none;
+		                cursor:pointer;
+		                font-size:18px;
+		            "
+		            title="Ver respostas">
+		
+		            👁
+		
+		        </button>
+		
+		    </td>
+		
+		</tr>
+		`;
+  }).join('');
+}
+
+function showResponseDetails(rowIndex){
+
+	const row = allRows[rowIndex];
+
+    const perfil =
+        row[perfilColIdx];
+
+    const body =
+        document.getElementById('responseBody');
+
+    let html = '';
+
+    headers.forEach((header,i)=>{
+
+        const valor = row[i];
+
+        // ignora vazios
+        if(
+            valor === '' ||
+            valor === null ||
+            valor === undefined
+        ){
+            return;
+        }
+
+        // mantém colunas administrativas
+        if(
+            i === 0 ||
+            i === perfilColIdx ||
+            i === cicloColIdx
+        ){
+
+            html += `
+                <div style="
+                    margin-bottom:10px;
+                    padding-bottom:8px;
+                    border-bottom:1px solid #eee">
+
+                    <strong>${header}</strong><br>
+                    ${valor}
+
+                </div>
+            `;
+
+            return;
+        }
+
+		const col =
+		    numericCols.find(
+		        c => c.idx === i
+		    );
+		
+		// Perguntas quantitativas
+		if(col){
+		
+		    const pertenceAoPerfil =
+		        col.perfil.some(p =>
+		            perfil.toLowerCase().includes(
+		                p.toLowerCase()
+		            )
+		        );
+
+			console.log('Perfil da resposta:', perfil);
+			console.log('Perfis da pergunta:', col.perfil);
+			console.log('Pertence:', pertenceAoPerfil);
+			
+		    if(!pertenceAoPerfil){
+		        return;
+		    }
+		
+		}
+
+        html += `
+            <div style="
+                margin-bottom:12px;
+                padding-bottom:10px;
+                border-bottom:1px solid #f0f0f0">
+
+                <strong>${header}</strong>
+
+                <div style="
+                    margin-top:4px;
+                    color:#004B87;
+                    font-weight:600">
+
+                    ${valor}
+
+                </div>
+
+            </div>
+        `;
+    });
+
+    body.innerHTML = html;
+
+    document.getElementById(
+        'responseModal'
+    ).style.display = 'block';
+}	
+
+function closeResponseModal(){
+    document.getElementById(
+        'responseModal'
+    ).style.display = 'none';
+}
+	
+/* ───────────── HELPERS ───────────── */
+function parseLikert(v){
+
+    if(
+        v === null ||
+        v === undefined ||
+        v === ''
+    ){
+        return null;
+    }
+
+    const n = Number(v);
+
+    return (
+        n >= 1 &&
+        n <= 4
+    )
+        ? n
+        : null;
+}
+
+function avg_(arr) { return arr.reduce((a,b) => a+b, 0) / arr.length; }
+
+function dimScores(rows) {
+  const scores = {};
+  Object.keys(DIMS).forEach(k => {
+    const cols = numericCols.filter(c => c.dim === k);
+    if (!cols.length) { scores[k] = 0; return; }
+    const vals = rows.flatMap(r => cols.map(c => parseLikert(r[c.idx])).filter(v => v !== null));
+    scores[k] = vals.length ? avg_(vals) : 0;
+  });
+  return scores;
+}
+
+function scoreLabel(v) {
+  if (v >= 3.5) return 'Excelente';
+  if (v >= 2.5) return 'Bom';
+  if (v >= 1.5) return 'Adequado';
+  return 'Insatisfatório';
+}
+
+function scoreCobertura(perfis, dimensoes) {
+    if (perfis === 4 && dimensoes === 6) {
+        return 'Completa';
+    }
+    return 'Incompleta';
+}
+
+/* ── Wire filters ── */
+document.getElementById('filter-perfil').addEventListener('change', render);
+document.getElementById('filter-ciclo').addEventListener('change', render);
+
+function showDimensionDetails(dimKey){
+
+    const rows = getFiltered();
+
+    const indicadores = INDICADORES[dimKey];
+
+    document.getElementById('modalTitle').textContent =
+        DIMS[dimKey].label;
+
+    const tbody = document.getElementById('modalBody');	
+
+	const indicadoresEsperados =
+    INDICADORES[dimKey]
+        .map(i => i.codigo);
+
+	const cols = numericCols
+	    .filter(c => c.dim === dimKey)
+	    .filter(c =>
+	        indicadoresEsperados.includes(
+	            getIndicadorNome(c.label)
+	        )
+    );
+
+    if (!cols.length) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="2">Nenhum indicador encontrado.</td>
+            </tr>
+        `;
+        document.getElementById('dimModal').style.display = 'block';
+        return;
+    }
+
+	console.table(
+    cols.map(c => ({
+        idx: c.idx,
+        label: c.label,
+        dim: c.dim
+    }))
+);
+	
+const grupos = {};
+
+cols.forEach(col => {
+
+    const indicador =
+        getIndicadorNome(col.label);
+
+    if(!grupos[indicador]){
+        grupos[indicador] = [];
+    }
+
+    grupos[indicador].push(col);
+
+});
+
+tbody.innerHTML = Object.entries(grupos)
+.map(([indicador, perguntas]) => {
+
+    // PERFIS DO INDICADOR
+    const perfis = [];
+
+    perguntas.forEach(col => {
+
+        const header = col.label.toLowerCase();
+
+        if(header.includes("residente")){
+            perfis.push("Residente");
+        }
+
+        if(header.includes("preceptor")){
+            perfis.push("Preceptor");
+        }
+
+        if(header.includes("tutor")){
+            perfis.push("Tutor");
+        }
+
+    });
+
+	const perfisTexto =
+    [...new Set(
+        perguntas.map(p => p.perfil)
+    )]
+    .filter(Boolean)
+    .join(", ");
+
+    const vals = [];
+
+    perguntas.forEach(col => {
+
+        rows.forEach(r => {
+
+            const v = parseLikert(r[col.idx]);
+
+            if(v !== null){
+                vals.push(v);
+            }
+
+        });
+
+    });
+
+    const media =
+        vals.length
+        ? avg_(vals).toFixed(2)
+        : "0.00";
+
+    const total =
+        vals.length;
+
+    const nivel4 =
+        total
+        ? ((vals.filter(v => v === 4).length / total) * 100).toFixed(1)
+        : "0.0";
+
+    const nivel1 =
+        total
+        ? ((vals.filter(v => v === 1).length / total) * 100).toFixed(1)
+        : "0.0";
+
+    return `
+        <tr>
+			<td title="Perfis: ${perfisTexto}">
+        		${indicador}
+    		</td>
+            <td><strong>${media}</strong></td>
+            <td>${total}</td>
+            <td style="color:#00876A;font-weight:600">
+                ${nivel4}%
+            </td>
+            <td style="color:#D8482F;font-weight:600">
+                ${nivel1}%
+            </td>
+        </tr>
+    `;
+
+}).join('');
+	
+    document.getElementById('dimModal').style.display = 'block';
+}	
+
+function closeModal(){
+    document.getElementById('dimModal').style.display = 'none';
+}
+
+window.addEventListener(
+    'click',
+    function(event){
+
+        const modal =
+            document.getElementById('dimModal');
+
+        if(event.target === modal){
+
+            modal.style.display =
+                'none';
+        }
+    }
+);
+
+/* ── Boot ── */
+loadData();
+</script>
+
+<!-- MODAL DAS DIMENSÕES -->
+
+<!-- MODAL DIMENSÕES -->
+<div id="dimModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal" onclick="closeModal()">&times;</span>
+
+    <h2 id="modalTitle">Dimensão</h2>
+
+    <table class="modal-table">
+      <thead>
+        <tr>
+          <th>Indicador</th>
+          <th>Média</th>
+		  <th>Respostas</th>
+		  <th>Nível 4 (%)</th>
+		  <th>Nível 1 (%)</th>		  
+        </tr>
+      </thead>
+      <tbody id="modalBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div id="responseModal" class="modal">
+    <div class="modal-content">
+        <span
+            class="close-modal"
+            onclick="closeResponseModal()">
+            &times;
+        </span>
+        <h2>Detalhes da Resposta</h2>
+        <div id="responseBody"></div>
+    </div>
+</div>	
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>	
+	
+</body>
+</html>
