@@ -1,4 +1,4 @@
 window.SHEET_CONFIG = {
-  sheetId: "1teLW5gF4PnfTb0dTIIhjibGHBcC11_yJieaoXdnzPTk",
-  gid: "1949102773"
+  sheetId: "1UA9bT_XQ1O8-wBhSBD-1a1Fyb_jmEZhmZYtgpSjwHb4",
+  gid: "2040090113"
 };
