@@ -1819,6 +1819,7 @@ function carregarDados() {
             console.log("Dados carregados:", rawData);
 
             inicializarDashboard(rawData);
+			gerarAnalisesTeoricas(rawData);
 
         }
 
@@ -1893,26 +1894,229 @@ function preencherTabela(data) {
 <!-- ==========================================
 KPIs (BASE)
 ========================================== -->
+<script>
+
+function safeNumber(val){
+    if(!val) return 0;
+    if(typeof val === "number") return val;
+    return val.toString().length;
+}
+
+// ===============================
+// FILTRO DE DADOS VÁLIDOS
+// ===============================
+
+function filtrarValidos(data){
+
+    return data.filter(d =>
+        d["Você concorda em participar desta pesquisa, de forma voluntária, ciente de que suas respostas são anônimas e utilizadas apenas para fins acadêmicos?"] === "Sim, concordo"
+    );
+
+}
+</script>
 
 <script>
 
-function gerarKPIs(data) {
+// ===============================
+// IRE - Índice de Racionalidade Eleitoral (0-100)
+// ===============================
 
-    const total = data.length;
+function calcularIRE(d){
 
-    document.getElementById("totalRespondentes").innerText = total;
+    let score = 0;
 
-    const validos = data.filter(d =>
-        d["Você concorda em participar desta pesquisa, de forma voluntária, ciente de que suas respostas são anônimas e utilizadas apenas para fins acadêmicos?"]
-        === "Sim, concordo"
-    ).length;
+    // custo-benefício
+    if(d["Ao decidir seu voto, você avalia o que ganhará ou perderá (exemplo: melhoria de serviços ou de impostos) com a eleição de determinado candidato  (custo-benefício)?"]){
+        const v = d["Ao decidir seu voto, você avalia o que ganhará ou perderá (exemplo: melhoria de serviços ou de impostos) com a eleição de determinado candidato  (custo-benefício)?"];
+        if(v.includes("Muito")) score += 25;
+        else if(v.includes("Moderado")) score += 18;
+        else if(v.includes("Pouco")) score += 10;
+    }
 
-    document.getElementById("respondentesValidos").innerText = validos;
+    // voto util / pesquisas
+    if(d["O quanto o resultado das pesquisas eleitorais influencia você a mudar de voto (voto útil)?"]){
+        const v = d["O quanto o resultado das pesquisas eleitorais influencia você a mudar de voto (voto útil)?"];
+        if(v.includes("Muito") || v.includes("Mudo")) score += 20;
+        else if(v.includes("Moderado")) score += 12;
+        else if(v.includes("Pouco")) score += 6;
+    }
+
+    // percepção de impacto do voto
+    if(d["O quanto você acredita que o seu voto pode ajudar a mudar o resultado de uma eleição?"]){
+        const v = d["O quanto você acredita que o seu voto pode ajudar a mudar o resultado de uma eleição?"];
+        if(v.includes("Sempre")) score += 20;
+        else if(v.includes("Frequentemente")) score += 15;
+        else if(v.includes("Às vezes")) score += 10;
+    }
+
+    // decisões baseadas em propostas/histórico
+    if(d["Quando você decide seu voto, o que mais pesa na sua escolha?"]){
+        const v = d["Quando você decide seu voto, o que mais pesa na sua escolha?"];
+        if(v.includes("Propostas") || v.includes("Desempenho")) score += 25;
+    }
+
+    return Math.min(100, score);
+}
+
+</script>
+
+<script>
+
+// ===============================
+// IIE - Índice de Influência Emocional (0-100)
+// ===============================
+
+function calcularIIE(d){
+
+    let score = 0;
+
+    const emo = d["O quanto fatores emocionais (como simpatia, carisma ou identificação pessoal com o candidato) influenciam sua escolha?"];
+
+    if(emo){
+
+        if(emo.includes("Muito")) score += 30;
+        else if(emo.includes("Moderado")) score += 20;
+        else if(emo.includes("Pouco")) score += 10;
+
+    }
+
+    const marketing = d["O quanto as propagandas de obras e serviços do governo durante períodos eleitorais influenciam seu voto?"];
+
+    if(marketing){
+
+        if(marketing.includes("Muito")) score += 25;
+        else if(marketing.includes("Moderadamente")) score += 15;
+
+    }
+
+    const redes = d["Em qual(is) meio(s) de comunicação você acompanha as campanhas eleitorais?"];
+
+    if(redes && (redes.includes("Redes sociais") || redes.includes("WhatsApp"))){
+        score += 20;
+    }
+
+    const contato = d["O contato direto de candidatos (visitas, telefonemas, redes sociais) aumenta a chance de  você votar neles?"];
+
+    if(contato && (contato.includes("Aumenta muito") || contato.includes("Decido"))){
+        score += 25;
+    }
+
+    return Math.min(100, score);
+}
+
+</script>
+
+
+<script>
+
+function gerarKPIs(data){
+
+    const validos = filtrarValidos(data);
+
+    let ireTotal = 0;
+    let iieTotal = 0;
+
+    validos.forEach(d => {
+        ireTotal += calcularIRE(d);
+        iieTotal += calcularIIE(d);
+    });
+
+    const ireMedio = (ireTotal / validos.length).toFixed(1);
+    const iieMedio = (iieTotal / validos.length).toFixed(1);
+
+    document.getElementById("ireMedio").innerText = ireMedio;
+    document.getElementById("iieMedio").innerText = iieMedio;
+
+    document.getElementById("ireCard").innerText = ireMedio;
+    document.getElementById("iieCard").innerText = iieMedio;
+
+    document.getElementById("totalRespondentes").innerText = data.length;
+    document.getElementById("respondentesValidos").innerText = validos.length;
 
 }
 
 </script>
 
+<script>
+
+function gerarInsights(data){
+
+    const validos = filtrarValidos(data);
+
+    let altaRacional = 0;
+    let altaEmocional = 0;
+
+    validos.forEach(d => {
+
+        if(calcularIRE(d) > 60) altaRacional++;
+        if(calcularIIE(d) > 60) altaEmocional++;
+
+    });
+
+    const total = validos.length;
+
+    let insights = [];
+
+    const percRacional = (altaRacional/total)*100;
+    const percEmocional = (altaEmocional/total)*100;
+
+    if(percRacional > percEmocional){
+        insights.push("Predominância de comportamento eleitoral racional na amostra.");
+    } else {
+        insights.push("Predominância de influência emocional na decisão de voto.");
+    }
+
+    if(percEmocional > 50){
+        insights.push("Alta influência de fatores afetivos e de marketing político.");
+    }
+
+    insights.push("Os dados indicam coexistência de racionalidade e heurísticas emocionais na decisão eleitoral.");
+
+    document.getElementById("insightsLista").innerHTML =
+        insights.map(i => `<li>${i}</li>`).join("");
+
+}
+
+</script>
+
+<script>
+
+function gerarAnalisesTeoricas(data){
+
+    const validos = filtrarValidos(data);
+
+    let racional = 0;
+    let emocional = 0;
+
+    validos.forEach(d => {
+        racional += calcularIRE(d);
+        emocional += calcularIIE(d);
+    });
+
+    const r = racional / validos.length;
+    const e = emocional / validos.length;
+
+    let textoRacional = "";
+    let textoAlgoritmos = "";
+
+    if(r > e){
+        textoRacional = "Os dados sugerem predominância parcial da Teoria da Escolha Racional, porém com limitações explicadas por fatores emocionais e digitais.";
+    } else {
+        textoRacional = "Os dados indicam enfraquecimento da racionalidade plena, sugerindo comportamento eleitoral híbrido.";
+    }
+
+    if(e > 60){
+        textoAlgoritmos = "A influência de redes sociais, marketing político e comunicação digital sugere forte mediação algorítmica da opinião pública.";
+    } else {
+        textoAlgoritmos = "A influência digital existe, mas não é dominante na decisão eleitoral da amostra.";
+    }
+
+    document.getElementById("analiseRacionalidade").innerText = textoRacional;
+    document.getElementById("analiseAlgoritmos").innerText = textoAlgoritmos;
+
+}
+
+</script>
 
 <!-- ==========================================
 INSIGHTS AUTOMÁTICOS (REGRAS SIMPLES)
