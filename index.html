@@ -1841,10 +1841,11 @@ INICIALIZAÇÃO PRINCIPAL
 function inicializarDashboard(data) {
 
 	preencherFiltros(data);
-    preencherTabela(data);
     gerarKPIs(data);
     gerarGraficos(data);
+	gerarPerfilSociodemografico(data);
     gerarInsights(data);
+	preencherTabela(data);	
 }
 
 </script>
@@ -2005,6 +2006,9 @@ function calcularIIE(d){
 }
 </script>
 
+<!-- ==========================================
+Preenchimento dos filtros
+========================================== -->
 <script>
 function preencherFiltros(data) {
 
@@ -2137,7 +2141,121 @@ function gerarInsights(data){
 </script>
 
 <script>
+function agruparColuna(data, coluna){
 
+    const resultado = {};
+
+    data.forEach(row => {
+
+        const valor = row[coluna];
+
+        if(!valor || valor.trim() === '') return;
+
+        resultado[valor] = (resultado[valor] || 0) + 1;
+
+    });
+
+    return resultado;
+
+}	
+
+function criarGraficoPizza(canvasId, titulo, dados){
+
+    const labels = Object.keys(dados);
+    const valores = Object.values(dados);
+
+    const ctx = document.getElementById(canvasId);
+
+    if(!ctx) return;
+
+    new Chart(ctx, {
+
+        type: 'doughnut',
+
+        data: {
+
+            labels,
+
+            datasets: [{
+                data: valores
+            }]
+        },
+
+        options: {
+
+            responsive: true,
+
+            plugins: {
+
+                legend: {
+                    position: 'bottom'
+                },
+
+                title: {
+                    display: true,
+                    text: titulo
+                }
+
+            }
+
+        }
+
+    });
+
+}	
+
+function gerarPerfilSociodemografico(data){
+
+    criarGraficoPizza(
+        "chartFaixaEtaria",
+        "Faixa Etária",
+        agruparColuna(data,"Qual é a sua faixa etária?")
+    );
+
+    criarGraficoPizza(
+        "chartGenero",
+        "Gênero",
+        agruparColuna(data,"Qual é o seu gênero?")
+    );
+
+    criarGraficoPizza(
+        "chartEscolaridade",
+        "Escolaridade",
+        agruparColuna(data,"Qual a sua escolaridade?")
+    );
+
+    criarGraficoPizza(
+        "chartRenda",
+        "Renda Familiar",
+        agruparColuna(
+            data,
+            "Qual é a faixa de renda familiar mensal do seu domicílio?"
+        )
+    );
+
+    criarGraficoPizza(
+        "chartNaturalidade",
+        "Naturalidade",
+        agruparColuna(
+            data,
+            "Você nasceu no município de Florianópolis?"
+        )
+    );
+
+    criarGraficoPizza(
+        "chartBairro",
+        "Distribuição por Bairro",
+        agruparColuna(
+            data,
+            "Em qual bairro de Florianópolis você reside?"
+        )
+    );
+
+}	
+	
+</script>
+
+<script>
 function gerarAnalisesTeoricas(data){
 
     const validos = filtrarValidos(data);
@@ -2220,7 +2338,6 @@ document.getElementById("darkModeBtn")
 });
 
 </script>
-
 
 <!-- ==========================================
 SIDEBAR TOGGLE
