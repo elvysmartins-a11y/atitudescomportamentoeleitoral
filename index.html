@@ -2321,14 +2321,21 @@ function gerarGraficoBairro(data){
 
             labels,
 
-            datasets: [{
-                label: 'Respondentes',
-                data: valores,
-				label: '% da amostra',
-                data: percentual,
-                borderWidth: 1
-            }]
-        },
+		datasets: [
+		
+		    {
+		        label: 'Respondentes',
+		        data: valores,
+		        borderWidth: 1
+		    },
+		
+		    {
+		        label: '% da amostra',
+		        data: percentual,
+		        borderWidth: 1
+		    }
+		
+		]        },
 
         options: {
 
