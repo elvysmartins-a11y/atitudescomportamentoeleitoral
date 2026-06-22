@@ -1795,6 +1795,7 @@ const SHEET_URL =
 let rawData = [];
 let charts = {};
 let filteredData = [];	
+const charts = {};	
 
 </script>
 
@@ -2272,36 +2273,30 @@ function criarGraficoPizza(canvasId, titulo, dados){
 
     if(!ctx) return;
 
-    new Chart(ctx, {
+    // destrói gráfico anterior
+    if(charts[canvasId]){
+        charts[canvasId].destroy();
+    }
+
+    charts[canvasId] = new Chart(ctx, {
 
         type: 'doughnut',
 
         data: {
-
             labels,
-
             datasets: [{
                 data: valores
             }]
         },
 
         options: {
-
             responsive: true,
-
+            maintainAspectRatio: false,
             plugins: {
-
-                legend: {
-                    position: 'bottom'
-                },
-
-                title: {
-                    display: true,
-                    text: titulo
+                legend:{
+                    position:'bottom'
                 }
-
             }
-
         }
 
     });
@@ -2417,7 +2412,12 @@ function gerarGraficoBairro(data){
 	);
 
     const ctx = document.getElementById("chartBairro");
+	
+	if(charts["chartBairro"]){
+	    charts["chartBairro"].destroy();
+	}
 
+	charts["chartBairro"] = 
     new Chart(ctx, {
 
         type: 'bar',
