@@ -1794,6 +1794,7 @@ const SHEET_URL =
 
 let rawData = [];
 let charts = {};
+let filteredData = [];	
 
 </script>
 
@@ -1840,13 +1841,46 @@ INICIALIZAÇÃO PRINCIPAL
 
 function inicializarDashboard(data) {
 
-	preencherFiltros(data);
-    gerarKPIs(data);
-	gerarPerfilSociodemografico(data);
-    gerarInsights(data);
-	preencherTabela(data);	
-}
+    rawData = filtrarValidos(data);
 
+    preencherFiltros(rawData);
+
+    configurarEventosFiltros();
+
+    aplicarFiltros();
+
+}
+	
+function configurarEventosFiltros(){
+
+    [
+        "filtroFaixaEtaria",
+        "filtroGenero",
+        "filtroEscolaridade",
+        "filtroRenda",
+        "filtroBairro",
+        "filtroIdeologia"
+    ].forEach(id => {
+
+        document
+            .getElementById(id)
+            .addEventListener("change", aplicarFiltros);
+
+    });
+
+}	
+
+function atualizarDashboard(){
+
+    gerarKPIs(filteredData);
+
+    gerarPerfilSociodemografico(filteredData);
+
+    gerarInsights(filteredData);
+
+    preencherTabela(filteredData);
+
+}	
 </script>
 
 
@@ -2063,6 +2097,75 @@ function preencherSelect(id, data, coluna) {
         option.textContent = valor;
         select.appendChild(option);
     });
+
+	document
+	.getElementById("filtroFaixaEtaria")
+	.addEventListener("change", aplicarFiltros);
+	
+	document
+	.getElementById("filtroGenero")
+	.addEventListener("change", aplicarFiltros);
+	
+	document
+	.getElementById("filtroEscolaridade")
+	.addEventListener("change", aplicarFiltros);
+	
+	document
+	.getElementById("filtroRenda")
+	.addEventListener("change", aplicarFiltros);
+	
+	document
+	.getElementById("filtroBairro")
+	.addEventListener("change", aplicarFiltros);
+	
+	document
+	.getElementById("filtroIdeologia")
+	.addEventListener("change", aplicarFiltros);	
+}	
+
+function aplicarFiltros(){
+
+    const faixa =
+        document.getElementById("filtroFaixaEtaria").value;
+    const genero =
+        document.getElementById("filtroGenero").value;
+    const escolaridade =
+        document.getElementById("filtroEscolaridade").value;
+    const renda =
+        document.getElementById("filtroRenda").value;
+    const bairro =
+        document.getElementById("filtroBairro").value;
+    const ideologia =
+        document.getElementById("filtroIdeologia").value;
+
+	filteredData = rawData.filter(r => {
+        return (
+            (!faixa ||
+             r["Qual é a sua faixa etária?"] === faixa)
+            &&
+            (!genero ||
+             r["Qual é o seu gênero?"] === genero)
+            &&
+            (!escolaridade ||
+             r["Qual a sua escolaridade?"] === escolaridade)
+            &&
+            (!renda ||
+             r["Qual é a faixa de renda familiar mensal do seu domicílio?"] === renda)
+            &&
+            (!bairro ||
+             r["Em qual bairro de Florianópolis você reside?"] === bairro)
+            &&
+            (!ideologia ||
+             r["Você se identifica com alguma orientação política/ideológica?"] === ideologia)
+        );
+    });
+    atualizarDashboard();
+}	
+
+function atualizarDashboard(){
+    gerarKPIs(filteredData);
+    gerarPerfilSociodemografico(filteredData);
+    preencherTabela(filteredData);
 }	
 	
 </script>
