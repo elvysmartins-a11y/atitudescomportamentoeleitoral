@@ -2306,8 +2306,8 @@ function gerarGraficoBairro(data){
 
     const labels = ranking.map(x => x[0]);
 	const total = data.length;
-    //const valores = ranking.map(x => x[1]);
-	const valores = ranking.map(x =>
+    const valores = ranking.map(x => x[1]);
+	const percentual = ranking.map(x =>
     	Number(((x[1] / total) * 100).toFixed(2))
 	);
 
@@ -2322,9 +2322,10 @@ function gerarGraficoBairro(data){
             labels,
 
             datasets: [{
-                //label: 'Respondentes',
-				label: '% da amostra',
+                label: 'Respondentes',
                 data: valores,
+				label: '% da amostra',
+                data: percentual,
                 borderWidth: 1
             }]
         },
