@@ -2241,14 +2241,7 @@ function gerarPerfilSociodemografico(data){
         )
     );
 
-    criarGraficoPizza(
-        "chartBairro",
-        "Distribuição por Bairro",
-        agruparColuna(
-            data,
-            "Em qual bairro de Florianópolis você reside?"
-        )
-    );
+	gerarGraficoBairro(data);
 
 }	
 	
@@ -2290,6 +2283,84 @@ function gerarAnalisesTeoricas(data){
 
 }
 
+function gerarGraficoBairro(data){
+
+    const coluna = "Em qual bairro de Florianópolis você reside?";
+
+    const contagem = {};
+
+    data.forEach(row => {
+
+        const bairro = row[coluna];
+
+        if(!bairro || bairro.trim() === "") return;
+
+        contagem[bairro] = (contagem[bairro] || 0) + 1;
+
+    });
+
+    // Ordena do maior para o menor
+    const ranking = Object.entries(contagem)
+        .sort((a,b) => b[1] - a[1])
+        .slice(0,15);
+
+    const labels = ranking.map(x => x[0]);
+	const total = data.length;
+    //const valores = ranking.map(x => x[1]);
+	const valores = ranking.map(x =>
+    	Number(((x[1] / total) * 100).toFixed(2))
+	);
+
+    const ctx = document.getElementById("chartBairro");
+
+    new Chart(ctx, {
+
+        type: 'bar',
+
+        data: {
+
+            labels,
+
+            datasets: [{
+                //label: 'Respondentes',
+				label: '% da amostra',
+                data: valores,
+                borderWidth: 1
+            }]
+        },
+
+        options: {
+
+            responsive: true,
+
+            indexAxis: 'y',
+
+            plugins: {
+
+                legend: {
+                    display: false
+                },
+
+                title: {
+                    display: true,
+                    text: '15 bairros com maior número de respondentes'
+                }
+
+            },
+
+            scales: {
+
+                x: {
+                    beginAtZero: true
+                }
+
+            }
+
+        }
+
+    });
+
+}	
 </script>
 
 <!-- ==========================================
