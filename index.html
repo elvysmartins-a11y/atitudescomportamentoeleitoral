@@ -1840,11 +1840,11 @@ INICIALIZAÇÃO PRINCIPAL
 
 function inicializarDashboard(data) {
 
+	preencherFiltros(data);
     preencherTabela(data);
     gerarKPIs(data);
     gerarGraficos(data);
     gerarInsights(data);
-
 }
 
 </script>
@@ -2003,10 +2003,67 @@ function calcularIIE(d){
 
     return Math.min(100, score);
 }
-
 </script>
 
+<script>
+function preencherFiltros(data) {
 
+    preencherSelect(
+        "filtroFaixaEtaria",
+        data,
+        "Qual é a sua faixa etária?"
+    );
+
+    preencherSelect(
+        "filtroGenero",
+        data,
+        "Qual é o seu gênero?"
+    );
+
+    preencherSelect(
+        "filtroEscolaridade",
+        data,
+        "Qual a sua escolaridade?"
+    );
+
+    preencherSelect(
+        "filtroRenda",
+        data,
+        "Qual é a faixa de renda familiar mensal do seu domicílio?"
+    );
+
+    preencherSelect(
+        "filtroBairro",
+        data,
+        "Em qual bairro de Florianópolis você reside?"
+    );
+
+    preencherSelect(
+        "filtroIdeologia",
+        data,
+        "Você se identifica com alguma orientação política/ideológica?"
+    );
+
+}	
+
+function preencherSelect(id, data, coluna) {
+    const select = document.getElementById(id);
+    select.innerHTML = '<option value="">Todas</option>';
+    const valores = [...new Set(
+        data
+        .map(r => r[coluna])
+        .filter(v => v && v.trim() !== "")
+    )].sort();
+    valores.forEach(valor => {
+        const option = document.createElement("option");
+        option.value = valor;
+        option.textContent = valor;
+        select.appendChild(option);
+    });
+}	
+	
+</script>
+	
 <script>
 
 function gerarKPIs(data){
