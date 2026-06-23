@@ -1939,7 +1939,10 @@ function safeNumber(val){
 // ===============================
 // FILTRO DE DADOS VÁLIDOS
 // ===============================
-
+function todosDados(data){
+    return data;
+}
+	
 function filtrarValidos(data){
 
     return data.filter(d =>
@@ -2176,7 +2179,7 @@ function atualizarDashboard(){
 
 function gerarKPIs(data){
 
-	const total = data.length;
+	const total = todosDados(data);
     const validos = filtrarValidos(data);
 
     let ireTotal = 0;
