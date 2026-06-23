@@ -2176,7 +2176,7 @@ function atualizarDashboard(){
 
 function gerarKPIs(data){
 
-	const total = data.lenght;
+	const total = data.length;
     const validos = filtrarValidos(data);
 
     let ireTotal = 0;
@@ -2196,7 +2196,7 @@ function gerarKPIs(data){
     document.getElementById("ireCard").innerText = ireMedio;
     document.getElementById("iieCard").innerText = iieMedio;
 
-    document.getElementById("totalRespondentes").innerText = total;
+    document.getElementById("totalRespondentes").innerText = total.length;
     document.getElementById("respondentesValidos").innerText = validos.length;
 
 }
